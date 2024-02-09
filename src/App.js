@@ -11,6 +11,8 @@ import ProtectedRoute from "./service/protected_route";
 import DashBoard_Layout from "./component/Layouts/Dashboard_Layout";
 import Enquiry_Material from "./screens/vendor_dashboard/component/Enquiry_Material";
 import Material_Table from "./screens/vendor_dashboard/component/material_table/Material_Table";
+import EnquiryMaterial from "./screens/enquiryMaterial/EnquiryMaterial";
+import MaterialPricesTable from "./screens/enquiryMaterial/MaterialPricesTable";
 
 function App() {
   useEffect(() => {
@@ -38,7 +40,22 @@ function App() {
             />
           }
         />
-    
+        <Route
+        path="/materialList"
+        element={
+          <ProtectedRoute
+            children={<DashBoard_Layout children={<EnquiryMaterial />} />}
+          />
+        }
+      />
+      <Route
+      path="/materialPricesTable"
+      element={
+        <ProtectedRoute
+          children={<DashBoard_Layout children={<MaterialPricesTable />} />}
+        />
+      }
+    />
       
         <Route
           path="/enquiryMaterial"

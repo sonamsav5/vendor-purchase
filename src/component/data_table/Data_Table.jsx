@@ -22,6 +22,7 @@ const Data_Table = (props) => {
     disableSelectionOnClick = true,
     onPageDataChange = (e) => e,
     rowCount,
+    onCellEditCommit
     // checkboxSelection = true,
   } = props;
 
@@ -53,48 +54,52 @@ const Data_Table = (props) => {
           height: 600,
         }}
       >
-        <DataGrid
-          className="dataTable"
-          sx={{
-            boxShadow: 1,
-            border: 2,
-            fontFamily: '"Nunito", sans-serif',
-            borderColor: "white",
-            backgroundColor: "White",
-            boxShadow:
-              "0px 5px 5px -11px gray, 0px 3px 1px 1px rgba(0, 0, 0, 0.14), 0px 3px 4px 2px gray",
+      <DataGrid
+      className="dataTable"
+      sx={{
+        boxShadow: 1,
+        border: 2,
+        fontFamily: '"Nunito", sans-serif',
+        borderColor: "white",
+        backgroundColor: "White",
+        boxShadow:
+          "0px 5px 5px -11px gray, 0px 3px 1px 1px rgba(0, 0, 0, 0.14), 0px 3px 4px 2px gray",
 
-            "& .MuiDataGrid-cell:hover": {
-              borderRadius: "10px",
-            },
-            "&  .MuiDataGrid-columnHeaders": {
-              color: "black",
-              backgroundColor: "lightgray",
-            },
-            "& .MuiDataGrid-columnHeaderTitle": {
-              fontWeight: "550",
+        "& .MuiDataGrid-cell:hover": {
+          borderRadius: "10px",
+        },
+        "&  .MuiDataGrid-columnHeaders": {
+          color: "black",
+          backgroundColor: "lightgray",
+        },
+        "& .MuiDataGrid-columnHeaderTitle": {
+          fontWeight: "550",
 
-              color: "black",
-              fontFamily: '"Nunito", sans-serif',
-            },
-          }}
-          disableColumnMenu={true}
-          disableColumnFilter={true}
-          getRowId={getRowId}
-          rows={rows}
-          columns={columns}
-          pagination={pagination}
-          paginationMode={paginationMode}
-          page={state.page}
-          onPageChange={onTablePageChangeHandler}
-          pageSize={state.pageSize}
-          onPageSizeChange={onTablePageSizeChangeHandler}
-          rowCount={rowCount || (rows || []).length}
-          rowsPerPageOptions={state.pageSizeOptionList}
-          disableSelectionOnClick={disableSelectionOnClick}
-          isCellEditable={() => false}
-          experimentalFeatures={{ newEditingApi: true }}
-        />
+          color: "black",
+          fontFamily: '"Nunito", sans-serif',
+        },
+      }}
+      disableColumnMenu={true}
+      disableColumnFilter={true}
+      getRowId={getRowId}
+      rows={rows}
+      columns={columns}
+      pagination={pagination}
+      paginationMode={paginationMode}
+      page={state.page}
+      onPageChange={onTablePageChangeHandler}
+      pageSize={state.pageSize}
+      onPageSizeChange={onTablePageSizeChangeHandler}
+      rowCount={rowCount || (rows || []).length}
+      rowsPerPageOptions={state.pageSizeOptionList}
+      disableSelectionOnClick={disableSelectionOnClick}
+      isCellEditable={() => true} // Set this to allow all cells to be editable
+      experimentalFeatures={{ newEditingApi: true }}
+      editable={{
+        onCellEditCommit: onCellEditCommit
+      }}
+    />
+
       </Box>
     </div>
   );

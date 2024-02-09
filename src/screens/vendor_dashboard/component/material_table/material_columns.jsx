@@ -2,8 +2,9 @@ import { Button } from "@mui/material";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 
 export const material_columns = [
-  { field: "material", headerName: "Material", width: 160 },
-  { field: "subMaterial", headerName: "Sub Material", width: 180 },
-  { field: "umo", headerName: "UMO", width: 140 },
-  { field: "Qty", headerName: "Qty", width: 80 },
+  { field: "AutoReference", headerName: "Auto Reference", width: 140 },
+  { field: "Type", headerName: "Type", width: 140 },
+  { field: "ProjectName", headerName: "ProjectName", width: 280 },
+  { field: "SiteName", headerName: "Site Name", width: 140 },
+  { field: "SiteLocation", headerName: "SiteLocation", width: 270 },
 ];

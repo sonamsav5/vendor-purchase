@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import MuiAlert from "@mui/material/Alert";
+
+//
 import {
   Container,
   Grid,
@@ -8,69 +10,72 @@ import {
   CardHeader,
   CardContent,
   IconButton,
+  Box,
   Snackbar,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import images from "../../utils/images/common/image_map";
 import { getRequestWithAuthentication } from "../../service/base_client";
-
 const initialVendorData = [
   {
     title: "Enquiry Received For Material",
-    link: "/enquiryMaterial",
+    urls: "ERFQ",
     imageSrc: images.re,
     actionCount: 1,
     description: "Description for Enquiry Received For Material",
   },
   {
     title: "Submitted Quotation",
-
+    urls: "SQ",
     imageSrc: images.quotation,
     actionCount: 1,
     description: "Description for Submitted Quotation",
   },
   {
     title: "Rejected Quotation",
-
+    urls: "RQ",
     imageSrc: images.selfrejected,
     actionCount: 1,
     description: "Description for Rejected Quotation",
   },
   {
-    title: "Self Rejected Enquiry",
-
+    title: "Self Rejected Quotation",
+    urls: "SRQ",
     imageSrc: images.selfrejected,
     actionCount: 0,
     description: "Description for Self Rejected Enquiry",
   },
   {
     title: "Order Received",
-
+    urls: "OR",
     imageSrc: images.received,
     actionCount: 0,
     description: "Description for Order Received",
   },
   {
     title: "Order Delivered",
+    urls: "OD",
     imageSrc: images.orderdelivered,
     actionCount: 0,
     description: "Description for Order Delivered",
   },
   {
     title: "Payment Pending",
-
+    urls: "PP",
     imageSrc: images.pending,
     actionCount: 0,
     description: "Description for Payment Pending",
   },
 ];
 
-const Vendor_Dashboard = () => {
+const VendorDashbord = () => {
+  const [loading, setLoading] = useState(false);
+
+  const [dashboardData, setDashboardData] = useState(initialVendorData);
+  const navigate = useNavigate();
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("error");
-  const [vendorData, setVendorData] = useState(initialVendorData);
-  const navigate = useNavigate();
 
   const openSnackbar = (message, severity) => {
     setSnackbarMessage(message);
@@ -81,37 +86,38 @@ const Vendor_Dashboard = () => {
   const closeSnackbar = () => {
     setSnackbarOpen(false);
   };
+  var getAllData = async () => {
+    setLoading(true);
 
-  const getVendorData = async () => {
-    try {
-      let url = "Purchase/VendorDashboard";
-      const response = await getRequestWithAuthentication(url);
+    let url = "Purchase/VendorDashboard";
+    var response = await getRequestWithAuthentication(url);
+    console.log(response);
+    if (response.status) {
+      const updatedData = [...initialVendorData];
 
-      if (response.status) {
-        const updatedData = [...initialVendorData];
+      updatedData[0]["actionCount"] = response.data[0].RequestForQuotation;
+      updatedData[1]["actionCount"] = response.data[0].SubmittedQuotation;
+      updatedData[2]["actionCount"] = response.data[0].RejectedQuotation;
+      updatedData[3]["actionCount"] = response.data[0].SelfRejectedQuotation;
+      updatedData[4]["actionCount"] = response.data[0].OrderReceived;
+      updatedData[5]["actionCount"] = response.data[0].OrderDelivered;
+      updatedData[6]["actionCount"] = response.data[0].PaymentPending;
 
-        updatedData[0]["actionCount"] = response.data[0].RequestForQuotation;
-        updatedData[1]["actionCount"] = response.data[0].EnquiryForQuotation;
-        updatedData[2]["actionCount"] = response.data[0].SubmittedQuotation;
-        updatedData[3]["actionCount"] = response.data[0].RejectedQuotation;
-        updatedData[4]["actionCount"] = response.data[0].OrderReceived;
-        updatedData[5]["actionCount"] = response.data[0].OrderDelivered;
-        updatedData[6]["actionCount"] = response.data[0].PaymentPending;
-        console.log(updatedData);
-        console.log(response.data);
-        setVendorData(updatedData);
-        // setVendorData(response.data);
-      } else {
-        openSnackbar("Error fetching data", "error");
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      openSnackbar("Error fetching data", "error");
+      setDashboardData(updatedData);
+      setTimeout(() => {
+        setLoading(false);
+      }, 2000);
+    } else {
+      openSnackbar("Error", response.data);
+
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    getVendorData();
+    // checkRefreshData();
+
+    getAllData();
   }, []);
 
   return (
@@ -131,29 +137,33 @@ const Vendor_Dashboard = () => {
             alignItems="flex-start"
             spacing={2}
           >
-            {vendorData.map((data, index) => (
-              <Grid key={index} item xs={12} md={4} lg={4}>
+            {dashboardData.map((data, index) => (
+              <Grid key={index} item xs={12} md={4} lg={2}>
                 <Card
                   sx={{
-                    height: "120px",
+                    height: "190px",
                     borderRadius: "13px",
                     backgroundColor: "rgb(255,255,255)",
                     transition: "transform 0.2s",
-                    cursor: "pointer",
                     boxShadow:
                       "0px 3px 3px -1px gray, 0px 3px 1px 1px gray, 0px 3px 3px 2px gray",
                     "&:hover": {
                       transform: "scale(1.05)",
                     },
+                    cursor: data.actionCount > 0 ? "pointer" : "default",
                   }}
-                  onClick={() => navigate(data.link)}
+                  onClick={() =>
+                    data.actionCount > 0 &&
+                    navigate("/enquiryMaterial", {
+                      state: { flag: data.urls, title: data.title },
+                    })
+                  }
                 >
                   <CardHeader
                     avatar={
                       <img
                         src={data.imageSrc}
                         style={{ height: "45px", width: "45px" }}
-                        alt={data.title}
                       />
                     }
                     action={
@@ -209,4 +219,4 @@ const Vendor_Dashboard = () => {
   );
 };
 
-export default Vendor_Dashboard;
+export default VendorDashbord;

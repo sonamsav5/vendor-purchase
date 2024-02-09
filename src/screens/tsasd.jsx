@@ -1,18 +1,12 @@
 import React, { useState, useEffect } from "react";
 import {
   Typography,
-  Drawer,
-  Tab,
-  Tabs,
-  IconButton,
   Box,
   Menu,
   MenuItem,
-  Button,
+  IconButton,
 } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import DownloadForOfflineIcon from "@mui/icons-material/DownloadForOffline";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { getRequestWithAuthentication } from "../../../service/base_client";
 import images from "../../../utils/images/common/image_map";
@@ -25,6 +19,19 @@ const Enquiry_Material = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [brokerTableData, setBrokerTableData] = useState([]);
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleMoreClick = (event, rowData) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseMoreOptions = () => {
+    setAnchorEl(null);
+  };
+
+  const handleViewClick = (rowData) => {
+    navigate("/enquiry-material-details", { state: rowData });
+  };
 
   const getMaterialData = async () => {
     try {
@@ -43,7 +50,6 @@ const Enquiry_Material = () => {
         const brokerTableDataWithIds = response.data.map((row, index) => ({
           ...row,
           id: index + 1,
-          loading: false,
         }));
         setBrokerTableData(brokerTableDataWithIds);
       } else {
@@ -56,16 +62,10 @@ const Enquiry_Material = () => {
     }
   };
 
-  const handleViewClick = (rowData) => {
-    if (rowData.Type === "Material") {
-      navigate("/materialList", { state: rowData.IndentMaterial });
-    }
-  };
-
   useEffect(() => {
     getMaterialData();
   }, []);
-  // console.log("vfv f vf",brokerTableData)
+
   return (
     <div style={{ marginTop: "4rem" }}>
       <Typography
@@ -79,11 +79,7 @@ const Enquiry_Material = () => {
         {location.state.title}
       </Typography>
 
-      <div
-        className="broker-table"
-        id="brokerDataTable"
-        style={{ height: "600px" }}
-      >
+      <div className="broker-table" style={{ height: "600px" }}>
         {loading ? (
           <Box
             height="100%"
@@ -104,13 +100,40 @@ const Enquiry_Material = () => {
                   <div className="action-buttons" style={{ display: "flex" }}>
                     {location.state.flag === "ERFQ" && (
                       <div
-                        className="view-button"
-                        style={{ cursor: "pointer", color: "green" }}
-                        onClick={() => handleViewClick(params.row)}
+                        className="upload-button"
+                        style={{
+                          cursor: "pointer",
+                          color: "green",
+                        }}
                       >
                         <RemoveRedEyeIcon />
                       </div>
                     )}
+
+                    <div
+                      className="more-button"
+                      style={{ cursor: "pointer", color: "orange" }}
+                    >
+                      <MoreVertIcon
+                        onClick={(e) => handleMoreClick(e, params.row)}
+                      />
+                      <Menu
+                        anchorEl={anchorEl}
+                        open={Boolean(anchorEl)}
+                        onClose={handleCloseMoreOptions}
+                      >
+                        <MenuItem
+                          onClick={() => handleViewClick(params.row)}
+                          sx={{
+                            color: "orange",
+                            fontSize: "17px",
+                          }}
+                        >
+                          View
+                        </MenuItem>
+                        {/* Add other menu items as needed */}
+                      </Menu>
+                    </div>
                   </div>
                 ),
               },
