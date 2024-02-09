@@ -15,10 +15,9 @@ import { material_list as materialList } from "./material_list";
 import { contract_list } from "./contract_list";
 import { checkRefreshData } from "../../action/splash/splase_action";
 
-const Material = () => {
+const Material = ({ updatedMaterialList, setUpdatedMaterialList }) => {
   const [selectedItems, setSelectedItems] = useState({});
   const [search, setSearch] = useState("");
-  const [updatedMaterialList, setUpdatedMaterialList] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [materialsToRender, setMaterialsToRender] = useState([]);
   const [contractResults, setContractResults] = useState([]);
@@ -41,15 +40,15 @@ const Material = () => {
 
       const updatedList = isContract
         ? contract_list.map((contract) => ({
-            ...contract,
-            isSelected:
-              updatedSelectedItems[contract.ContractMasterId] || false,
-          }))
+          ...contract,
+          isSelected:
+            updatedSelectedItems[contract.ContractMasterId] || false,
+        }))
         : materialList.map((material) => ({
-            ...material,
-            isSelected:
-              updatedSelectedItems[material.MaterialSubTypeMasterId] || false,
-          }));
+          ...material,
+          isSelected:
+            updatedSelectedItems[material.MaterialSubTypeMasterId] || false,
+        }));
 
       setUpdatedMaterialList(updatedList);
 
@@ -85,17 +84,6 @@ const Material = () => {
     setContractsToRender(search ? filteredContracts : contract_list);
   };
 
-  const handleEditProfile = () => {
-    const user = localStorage.getItem("user")
-      ? JSON.parse(localStorage.getItem("user"))
-      : {};
-    localStorage.setItem(
-      "user",
-      JSON.stringify({ ...user, updatedMaterialList })
-    );
-    setChangesSaved(true);
-  };
-
   useEffect(() => {
     const initialItems = isSupplier
       ? {}
@@ -112,14 +100,17 @@ const Material = () => {
     checkRefreshData();
   }, [isSupplier, search, searchResults, contractResults]);
 
+  useEffect(() => {
+    handleSearch()
+  }, [search])
+
   return (
     <Container
-      maxWidth="lg"
-      sx={{
-        marginTop: "2rem",
-        border: "1px solid #E0EEF7",
-        padding: "2rem",
-      }}
+    sx={{
+      maxWidth:"800px",
+      paddingX: "2rem",
+      maxHeight:'100%',
+    }}
     >
       <Typography variant="h5" sx={{ marginBottom: "1rem" }}>
         {isSupplier ? "Material List" : "Contractor List"}
@@ -141,32 +132,44 @@ const Material = () => {
         }}
         sx={{ marginBottom: "1rem" }}
       />
+
       <List>
         {isSupplier
-          ? materialsToRender.map((material) => (
-              <ListItem
-                key={`${material.MaterialMasterId}_${material.MaterialSubTypeMasterId}`}
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                {`${material.MaterialName} - ${material.MaterialSubTypeCode}`}
-                <Checkbox
-                  checked={
-                    selectedItems[material.MaterialSubTypeMasterId] || false
-                  }
-                  onChange={() =>
-                    handleCheckboxChange(
-                      material.MaterialSubTypeMasterId,
-                      false
-                    )
-                  }
-                />
+          ?
+          (
+            materialsToRender.length ?
+              materialsToRender.map((material) => (
+                <ListItem
+                  key={`${material.MaterialMasterId}_${material.MaterialSubTypeMasterId}`}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  {`${material.MaterialName} - ${material.MaterialSubTypeCode}`}
+                  <Checkbox
+                    checked={
+                      selectedItems[material.MaterialSubTypeMasterId] || false
+                    }
+                    onChange={() =>
+                      handleCheckboxChange(
+                        material.MaterialSubTypeMasterId,
+                        false
+                      )
+                    }
+                  />
+                </ListItem>
+              ))
+              :
+              <ListItem>
+                <Typography color='black'>No Data</Typography>
               </ListItem>
-            ))
-          : contractsToRender.map((contractor) => (
+          )
+          :
+          (
+            contractsToRender.length ?
+            contractsToRender.map((contractor) => (
               <ListItem
                 key={contractor.ContractMasterId}
                 sx={{
@@ -183,33 +186,14 @@ const Material = () => {
                   }
                 />
               </ListItem>
-            ))}
+            ))
+            :
+            <ListItem>
+            <Typography color='black'>No Data</Typography>
+          </ListItem>
+          )
+        }
       </List>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleEditProfile}
-        disabled={changesSaved}
-        sx={{
-          marginTop: "0.5rem",
-          width: "160px",
-          backgroundColor: "#020043",
-          color: "#FFD500",
-          padding: "5px 10px",
-          borderRadius: "5px",
-          cursor: "pointer",
-          "&:focus": {
-            color: "#FFD500",
-            backgroundColor: "#020043",
-          },
-          "&:hover": {
-            color: "#FFD500",
-            backgroundColor: "#020043",
-          },
-        }}
-      >
-        {changesSaved ? "Saved" : "Save Changes"}
-      </Button>
     </Container>
   );
 };

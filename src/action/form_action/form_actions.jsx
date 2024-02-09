@@ -8,7 +8,7 @@ export const getStaticData = (payload) => {
   result.push(JSON.parse(localStorage.getItem("bankName")));
   result.push(JSON.parse(localStorage.getItem("materailData")));
   result.push(JSON.parse(localStorage.getItem("contractData")));
-  console.log("name", JSON.parse(localStorage.getItem("bankName")));
+  //console.log("name", JSON.parse(localStorage.getItem("bankName")));
 
   return result;
 };

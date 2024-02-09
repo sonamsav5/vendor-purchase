@@ -3,9 +3,11 @@ import React, { useState } from "react";
 import { Box, Stack } from "@mui/material";
 import Sidebar from "../sidebar/Sidebar";
 
+const drawerWidth = 250;
+
 const DashBoard_Layout = ({ children, role }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-
+  const [navbar, setNavbar] = useState(false)
   return (
     <div style={{ width: "100%" }}>
       <Sidebar
@@ -13,13 +15,16 @@ const DashBoard_Layout = ({ children, role }) => {
         isOpen={isSidebarOpen}
         setIsOpen={setIsSidebarOpen}
         role={role}
+        navbar={navbar}
+        setNavbar={setNavbar}
+        drawerWidth={drawerWidth}
       />
       <Stack
         flex={1}
-        ml={isSidebarOpen ? { md: "330px", xs: 0 } : { md: "70px", xs: 0 }}
+        ml={navbar && { md:`${drawerWidth}px`, xs: 0 }}
         overflow="hidden"
       >
-        <Box maxWidth="100%" width="100%">
+        <Box maxWidth="100%" width="100%" marginTop='3rem'>
           {children}
         </Box>
       </Stack>

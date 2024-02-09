@@ -9,6 +9,7 @@ import {
   CardContent,
   IconButton,
   Snackbar,
+  Box,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import images from "../../utils/images/common/image_map";
@@ -137,9 +138,11 @@ const Vendor_Dashboard = () => {
                   sx={{
                     height: "120px",
                     borderRadius: "13px",
-                    backgroundColor: "rgb(255,255,255)",
+                    background: 'linear-gradient(to right, white, #FBF8E6, #F7E3EE)',
+                  //  backgroundColor: "rgb(255,255,255)",
                     transition: "transform 0.2s",
                     cursor: "pointer",
+                    position: 'relative',
                     boxShadow:
                       "0px 3px 3px -1px gray, 0px 3px 1px 1px gray, 0px 3px 3px 2px gray",
                     "&:hover": {
@@ -160,9 +163,25 @@ const Vendor_Dashboard = () => {
                       <IconButton
                         sx={{
                           fontSize: "1.5rem",
+                          position: 'absolute',
+                          height: '100px',
+                          width: '100px',
+                          background: 'white',
+                          top: '-30%',
+                          right: '-10%'
                         }}
                       >
-                        {data.actionCount}
+                        <Box sx={{ position: 'relative',width:'100%',height:'100%'}}>
+                          <Typography sx={{position:'absolute',
+                          top:'45%',
+                          left:'30%',
+                          fontSize:25,
+                          fontWeight:'bold',
+                          color:'black'
+                          }}>
+                            {data.actionCount}
+                          </Typography>
+                        </Box>
                       </IconButton>
                     }
                   />

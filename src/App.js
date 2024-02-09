@@ -11,6 +11,7 @@ import ProtectedRoute from "./service/protected_route";
 import DashBoard_Layout from "./component/Layouts/Dashboard_Layout";
 import Enquiry_Material from "./screens/vendor_dashboard/component/Enquiry_Material";
 import Material_Table from "./screens/vendor_dashboard/component/material_table/Material_Table";
+import MyMaterials from "./screens/my-materials/MyMaterials";
 
 function App() {
   useEffect(() => {
@@ -53,6 +54,14 @@ function App() {
           element={
             <ProtectedRoute
               children={<DashBoard_Layout children={<Material_Table />} />}
+            />
+          }
+        />
+         <Route
+          path="/my_material"
+          element={
+            <ProtectedRoute
+              children={<DashBoard_Layout children={<MyMaterials />} />}
             />
           }
         />
