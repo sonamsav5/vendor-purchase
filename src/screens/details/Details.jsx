@@ -261,8 +261,8 @@ const Details = () => {
           )}
           <Box sx={{
             width: '100%',
-            position: 'sticky',
-            margin: 'auto',
+            position: 'fixed',
+            marginLeft: '100px',
             border: '3px solid pink',
             bottom: 0,
             left: 0,
