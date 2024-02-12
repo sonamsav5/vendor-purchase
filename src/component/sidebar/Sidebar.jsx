@@ -24,7 +24,7 @@ import LocalOfferOutlinedIcon from "@mui/icons-material/LocalOfferOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import images from "../../utils/images/common/image_map";
 
-const drawerWidth = 320;
+const drawerWidth = 280;
 
 const Sidebar = () => {
   const [mobileOpen, setMobileOpen] = React.useState(false);

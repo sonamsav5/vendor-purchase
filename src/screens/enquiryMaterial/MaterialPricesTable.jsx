@@ -1,55 +1,27 @@
-// MaterialPricesTable.js
 import React, { useState, useEffect } from "react";
-import { Button } from "@mui/material";
+import {
+  Button,
+  Card,
+  Container,
+  Grid,
+  MenuItem,
+  Select,
+  TextField,
+} from "@mui/material";
 import Data_Table from "../../component/data_table/Data_Table";
-import { useLocation } from "react-router-dom";
-import Add_Price_Form from "./add_price_form/Add_Price_Forma";
-
+import { useLocation, useNavigate } from "react-router-dom";
+import { Constant } from "../../utils/constant/constant";
+import axios from "axios";
 const MaterialPricesTable = () => {
   const location = useLocation();
   const [IndentMaterial, setIndentMaterial] = useState([]);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [disabledRows, setDisabledRows] = useState([]);
-  const [selectedRowId, setSelectedRowId] = useState(null); // Define selectedRowId state
-  const [isFormSubmitted, setIsFormSubmitted] = useState(false); // State to track form submission
-
-  const columns = [
-    { field: "UOMName", headerName: "UOM Name", width: 150 },
-    { field: "MaterialName", headerName: "Material Name", width: 150 },
-    { field: "DeliveryDate", headerName: "Delivery Date", width: 200 },
-    { field: "Quantity", headerName: "Quantity", width: 150 },
-    ...(isFormSubmitted // Conditionally add columns if form is submitted
-      ? [
-          { field: "rate", headerName: "Rate", width: 150 },
-          { field: "cgst", headerName: "CGST", width: 150 },
-          { field: "igst", headerName: "IGST", width: 150 },
-          { field: "discount", headerName: "Discount", width: 150 },
-          { field: "total", headerName: "Total", width: 150 },
-        ]
-      : []),
-    {
-      field: "action",
-      headerName: "Action",
-      width: 230,
-      renderCell: (params) => {
-        const rowId = params.id;
-        const isDisabled = disabledRows.includes(rowId);
-        return (
-          <div className="editButton">
-            <Button
-              variant="contained"
-              color="secondary"
-              disabled={isDisabled}
-              onClick={() => handleAddPriceClick(rowId)}
-            >
-              Add Price
-            </Button>
-          </div>
-        );
-      },
-    },
-  ];
-
+  const [transportation, setTransportation] = useState(0);
+  const [loading, setLoading] = useState(0);
+  const [unloading, setUnloading] = useState(0);
+  const [deliveryDays, setDeliveryDays] = useState(0);
+  const [paymentDays, setPaymentDays] = useState(0);
+  const [priceTable, setPriceTable] = useState({});
+  const navigate = useNavigate();
   useEffect(() => {
     if (location?.state) {
       setIndentMaterial(
@@ -58,6 +30,7 @@ const MaterialPricesTable = () => {
           id: idx + 1,
           rate: "",
           cgst: "",
+          sgst: "",
           igst: "",
           discount: "",
           total: "",
@@ -66,44 +39,275 @@ const MaterialPricesTable = () => {
     }
   }, [location.state]);
 
-  const handleCloseDialog = () => {
-    setIsDialogOpen(false);
-  };
-
-  const handleSaveDialog = (formData) => {
-    // Update the table data with the new form data
+  const handleFieldChange = (rowId, fieldName, value) => {
     const updatedRows = IndentMaterial.map((row) => {
-      if (row.id === selectedRowId) {
-        return {
-          ...row,
-          rate: formData.rate,
-          cgst: formData.cgst,
-          igst: formData.igst,
-          discount: formData.discount,
-          total: formData.total,
-        };
+      if (row.id === rowId) {
+        return { ...row, [fieldName]: value };
       }
       return row;
     });
-    setIndentMaterial(updatedRows);
-    setDisabledRows([...disabledRows, selectedRowId]); // Disable the button for the row
-    setIsFormSubmitted(true); // Set form submission state to true
+
+    // Calculate total and update the row
+    const updatedRowsWithTotal = updatedRows.map((row) => {
+      const { Quantity, rate, discount, cgst, sgst, igst } = row;
+      const calculatedTotal = (
+        Quantity * rate * (1 - discount / 100) +
+        (cgst / 100) * (Quantity * rate) +
+        (sgst / 100) * (Quantity * rate) +
+        (igst / 100) * (Quantity * rate)
+      ).toFixed(2); // Fixing to 2 decimal places
+      return { ...row, total: calculatedTotal };
+    });
+
+    setIndentMaterial(updatedRowsWithTotal);
   };
 
-  const handleAddPriceClick = (rowId) => {
-    setSelectedRowId(rowId); // Set selectedRowId when Add Price button is clicked
-    setIsDialogOpen(true);
+  // Calculate Grand Total including Transportation, Loading, Unloading, Delivery Days, and Payment Days
+  const grandTotal = (
+    IndentMaterial.reduce((acc, curr) => {
+      return acc + Number(curr.total);
+    }, 0) +
+    transportation +
+    loading +
+    unloading
+  ).toFixed(2);
+
+  const columns = [
+    {
+      field: "MaterialName",
+      headerName: "Material Description",
+      width: 200,
+      renderCell: (params) => (
+        <div>
+          <div>{params.row.MaterialName}</div>
+          <div>{params.row.MaterialSubtypeName}</div>
+        </div>
+      ),
+    },
+    { field: "DeliveryDate", headerName: "Delivery By", width: 100 },
+    { field: "UOMName", headerName: "UOM", width: 100 },
+    { field: "Quantity", headerName: "Quantity", width: 130 },
+    {
+      field: "rate",
+      headerName: "Rate",
+      width: 100,
+      renderCell: (params) => (
+        <TextField
+          label="Enter"
+          variant="standard"
+          value={params.row.rate}
+          onChange={(e) =>
+            handleFieldChange(params.row.id, "rate", e.target.value)
+          }
+          fullWidth
+        />
+      ),
+    },
+    {
+      field: "CGST",
+      headerName: "CGST%",
+      width: 90,
+      renderCell: (params) => (
+        <TextField
+          label="Enter"
+          variant="standard"
+          value={params.row.cgst}
+          onChange={(e) =>
+            handleFieldChange(params.row.id, "cgst", e.target.value)
+          }
+          fullWidth
+        />
+      ),
+    },
+    {
+      field: "SGST",
+      headerName: "SGST%",
+      width: 90,
+      renderCell: (params) => (
+        <TextField
+          label="Enter"
+          variant="standard"
+          value={params.row.sgst}
+          onChange={(e) =>
+            handleFieldChange(params.row.id, "sgst", e.target.value)
+          }
+          fullWidth
+        />
+      ),
+    },
+    {
+      field: "IGST",
+      headerName: "IGST%",
+      width: 90,
+      renderCell: (params) => (
+        <TextField
+          label="Enter"
+          variant="standard"
+          value={params.row.igst}
+          onChange={(e) =>
+            handleFieldChange(params.row.id, "igst", e.target.value)
+          }
+          fullWidth
+        />
+      ),
+    },
+    {
+      field: "Discount",
+      headerName: "Disc%",
+      width: 90,
+      renderCell: (params) => (
+        <TextField
+          label="Enter"
+          variant="standard"
+          value={params.row.discount}
+          onChange={(e) =>
+            handleFieldChange(params.row.id, "discount", e.target.value)
+          }
+          fullWidth
+        />
+      ),
+    },
+    {
+      field: "total",
+      headerName: "Total",
+      width: 150,
+    },
+  ];
+
+  const handleSubmit = async () => {
+    try {
+      const indentMaterialDetails = IndentMaterial.map((row) => ({
+        IndentMaterialId: row.id,
+        IndentMaterialPrice: row.rate,
+        CGST: row.cgst,
+        SGST: row.sgst,
+        IGST: 0,
+        UGST: 0,
+        Discount: 10,
+      }));
+
+      const formData = new FormData();
+      formData.append(
+        "IndentMaterialDetails",
+        JSON.stringify(indentMaterialDetails)
+      );
+
+      formData.append("Flag", "ACCEPT");
+      formData.append("Transport", transportation);
+      formData.append("Loading", loading);
+      formData.append("UnLoading", unloading);
+      formData.append("ExpectedDelivery", deliveryDays);
+      formData.append("ExpectedPayment", paymentDays);
+      formData.append("Attachment", "");
+      formData.append("Attachment2", "");
+      formData.append("TotalAmount", grandTotal);
+
+      const token = JSON.parse(localStorage.getItem("token"));
+
+      const headers = {
+        Accept: "application/json",
+        "content-type": "multipart/form-data",
+        apiKey: Constant.apiKey,
+        Authorization: `Bearer ${token}`,
+      };
+
+      const response = await axios.post(
+        `${Constant.baseUrl}/Purchase/AddIndentMaterialCost`,
+        formData,
+        { headers }
+      );
+
+      navigate("/vendordashboard", {
+        state: { flag: "SQ", title: "Submitted Quotation" },
+      });
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
+  console.log("sdvnjv", IndentMaterial);
   return (
-    <div style={{ marginTop: "2rem", padding: "2rem" }}>
+    <Container
+      maxWidth="lg"
+      sx={{ marginTop: "1rem", padding: "1rem", width: "100%" }}
+    >
       <Data_Table columns={columns} rows={IndentMaterial} />
-      <Add_Price_Form
-        open={isDialogOpen}
-        handleClose={handleCloseDialog}
-        handleSave={handleSaveDialog}
-      />
-    </div>
+      <Card
+        sx={{
+          padding: "1rem",
+          marginTop: "1rem",
+        }}
+      >
+        <Grid
+          container
+          direction="row"
+          justifyContent="center"
+          alignItems="center"
+          spacing={1}
+        >
+          <Grid item xs={2}>
+            <TextField
+              label="Transportation"
+              variant="outlined"
+              value={transportation}
+              onChange={(e) => setTransportation(Number(e.target.value))}
+            />
+          </Grid>
+          <Grid item xs={2}>
+            <TextField
+              label="Loading"
+              variant="outlined"
+              value={loading}
+              onChange={(e) => setLoading(Number(e.target.value))}
+            />
+          </Grid>
+          <Grid item xs={2}>
+            <TextField
+              label="Unloading"
+              variant="outlined"
+              value={unloading}
+              onChange={(e) => setUnloading(Number(e.target.value))}
+            />
+          </Grid>
+          <Grid item xs={2}>
+            <TextField
+              label="Expected Delivery in days"
+              variant="outlined"
+              value={deliveryDays}
+              onChange={(e) => setDeliveryDays(Number(e.target.value))}
+            />
+          </Grid>
+          <Grid item xs={2}>
+            <TextField
+              label="Expected Payment in days"
+              variant="outlined"
+              value={paymentDays}
+              onChange={(e) => setPaymentDays(Number(e.target.value))}
+            />
+          </Grid>
+          <Grid item xs={2}>
+            <TextField
+              label="Grand Total"
+              variant="outlined"
+              value={grandTotal}
+              disabled
+            />
+          </Grid>
+
+          <Grid>
+            <Button
+              variant="contained"
+              onClick={handleSubmit}
+              sx={{
+                marginTop: "1rem",
+              }}
+            >
+              Submit
+            </Button>
+          </Grid>
+        </Grid>
+      </Card>
+    </Container>
   );
 };
 
