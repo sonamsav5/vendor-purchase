@@ -14,20 +14,18 @@ import { getStaticData } from "../../action/form_action/form_actions";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { checkRefreshData } from "../../action/splash/splase_action";
-const accountTypes = ["Current", "Saving"];
+const accountTypes = [
+  {
+    id: 1,
+    label: "Current",
+  },
+  {
+    id: 2,
+    label: "Saving",
+  },
+];
 
-const Account_Form = () => {
-  const [accountDetails, setAccountDetails] = useState({
-    AccountHolderName: "",
-    AccountNumber: "",
-    BankId: "",
-    IFSC: "",
-    AccountTypeId: "",
-    MICR: "",
-    BankAddress: "",
-    AccountUrl: "",
-  });
-
+const Account_Form = ({ accountDetails, setAccountDetails }) => {
   const [bankList, setBankList] = useState([]);
   const [changesSaved, setChangesSaved] = useState(false);
 
@@ -38,19 +36,6 @@ const Account_Form = () => {
       ...prevDetails,
       AccountUrl: URL.createObjectURL(file),
     }));
-  };
-
-  const handleEditProfile = () => {
-    const user = localStorage.getItem("user")
-      ? JSON.parse(localStorage.getItem("user"))
-      : {};
-    let temp = {
-      ...user,
-      ...accountDetails,
-      AccountTypeId: accountDetails.AccountTypeId === "Saving" ? 1 : 2,
-    };
-    localStorage.setItem("user", JSON.stringify(temp));
-    setChangesSaved(true);
   };
 
   useEffect(() => {
@@ -78,16 +63,14 @@ const Account_Form = () => {
       ...prevDetails,
       [name]: value,
     }));
-    setChangesSaved(false); 
+    setChangesSaved(false);
   };
 
   return (
     <Container
-      maxWidth="sm"
       sx={{
-        marginTop: "1rem",
-        border: "10px solid  #E0EEF7",
-        padding: "2rem",
+        maxWidth: "800px",
+        paddingX: "2rem",
       }}
     >
       <Typography
@@ -95,8 +78,8 @@ const Account_Form = () => {
           fontWeight: "600",
           fontSize: "20px",
           color: "#020043",
-          textAlign: "center",
-          padding: "1rem",
+          textAlign: "left",
+          paddingY: "1rem",
         }}
       >
         Account
@@ -157,12 +140,12 @@ const Account_Form = () => {
             fullWidth
             select
             name="AccountTypeId"
-            value={accountDetails.AccountTypeId}
+            value={accountDetails.AccountTypeId || 1}
             onChange={handleChange}
           >
             {accountTypes.map((option, index) => (
-              <MenuItem key={index} value={option}>
-                {option}
+              <MenuItem key={index} value={option.id}>
+                {option.label}
               </MenuItem>
             ))}
           </TextField>
@@ -177,7 +160,7 @@ const Account_Form = () => {
             onChange={handleChange}
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={6}>
           <TextField
             label="Bank Address"
             fullWidth
@@ -186,7 +169,7 @@ const Account_Form = () => {
             onChange={handleChange}
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={6}>
           <TextField
             label="Account Document"
             fullWidth
@@ -216,33 +199,6 @@ const Account_Form = () => {
               ),
             }}
           />
-        </Grid>
-        <Grid item xs={12}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleEditProfile}
-            disabled={changesSaved}
-            sx={{
-              marginTop: "0.5rem",
-              width: "160px",
-              backgroundColor: "#020043",
-              color: "#FFD500",
-              padding: "5px 10px",
-              borderRadius: "5px",
-              cursor: "pointer",
-              "&:focus": {
-                color: "#FFD500",
-                backgroundColor: "#020043",
-              },
-              "&:hover": {
-                color: "#FFD500",
-                backgroundColor: "#020043",
-              },
-            }}
-          >
-            {changesSaved ? "Saved" : "Save Changes"}
-          </Button>
         </Grid>
       </Grid>
     </Container>

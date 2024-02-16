@@ -6,6 +6,8 @@ import {
   Step,
   StepLabel,
   Button,
+  Box,
+  Typography,
 } from "@mui/material";
 import Profile from "../profile/Profile";
 import "../../css/common/common.css";
@@ -15,36 +17,150 @@ import Material from "../material/Material";
 import { submit_action } from "../../action/profile_form_action/profile_form_action";
 import { checkRefreshData } from "../../action/splash/splase_action";
 import { useEffect } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Details = () => {
-  const [activeStep, setActiveStep] = React.useState(0);
+  const [activeStep, setActiveStep] = useState(0);
+  const navigate = useNavigate();
+  const [updatedMaterialList, setUpdatedMaterialList] = useState([]);
+  const [taxFormDetails, setTaxFormDetails] = useState({
+    PanNumber: "",
+    GST: "",
+    CGST: "",
+    IGST: "",
+    SGST: "",
+    PanCardUrl: "",
+    UTGST: "",
+    GSTUrl: "",
+  });
+  const [profileDetails, setProfileDetails] = useState({
+    VendorName: "",
+    EmailId: "",
+    MobileNumber: "",
+    Address: "",
+    CountryId: "", //country
+    StateId: "", //state
+    CityId: "", //city
+  });
+  const [accountDetails, setAccountDetails] = useState({
+    AccountHolderName: "",
+    AccountNumber: "",
+    BankId: "",
+    IFSC: "",
+    AccountTypeId: "",
+    MICR: "",
+    BankAddress: "",
+    AccountUrl: "",
+  });
 
   const handleNext = () => {
+    if (activeStep === 0) handleEditProfile();
+    if (activeStep === 1) handleEditTax();
+    if (activeStep === 2) handleEditAccount();
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
+  const validateProfile = (validationFunction) => {
+    if (validationFunction()) {
+      handleNext();
+    }
+  };
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
   const handleSubmit = async () => {
-    await submit_action();
+    handleEditCheckList();
+    const res = await submit_action();
+    if (res.IsSuccess) {
+      navigate("/vendordashboard");
+    }
+    console.log(res);
   };
   useEffect(() => {
     checkRefreshData();
   }, []);
+
+  const handleEditCheckList = () => {
+    const user = localStorage.getItem("user")
+      ? JSON.parse(localStorage.getItem("user"))
+      : {};
+    localStorage.setItem(
+      "user",
+      JSON.stringify({ ...user, updatedMaterialList })
+    );
+  };
+
+  const handleEditProfile = () => {
+    const user = localStorage.getItem("user")
+      ? JSON.parse(localStorage.getItem("user"))
+      : {};
+    let temp = {
+      ...user,
+      ...profileDetails,
+    };
+    localStorage.setItem("user", JSON.stringify(temp));
+  };
+  const handleEditAccount = () => {
+    const user = localStorage.getItem("user")
+      ? JSON.parse(localStorage.getItem("user"))
+      : {};
+    let temp = {
+      ...user,
+      ...accountDetails,
+      AccountTypeId: accountDetails.AccountTypeId,
+    };
+    localStorage.setItem("user", JSON.stringify(temp));
+  };
+
+  const handleEditTax = () => {
+    const user = localStorage.getItem("user")
+      ? JSON.parse(localStorage.getItem("user"))
+      : {};
+    let temp = {
+      ...user,
+      ...taxFormDetails,
+    };
+    localStorage.setItem("user", JSON.stringify(temp));
+  };
+
+  function CustomTabPanel(props) {
+    const { children, value, index, ...other } = props;
+
+    return (
+      <div
+        role="tabpanel"
+        hidden={value !== index}
+        id={`simple-tabpanel-${index}`}
+        aria-labelledby={`simple-tab-${index}`}
+        {...other}
+      >
+        {value === index && (
+          <Box sx={{ p: 3 }}>
+            <Typography>{children}</Typography>
+          </Box>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div
       style={{
-        // marginTop: "10rem",
-        padding: "1rem",
+        width: "100%",
+        height: "calc(100vh - 3rem)",
+
+        overflow: "auto",
+        position: "relative",
       }}
     >
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
+      <Grid container height="100%">
+        <Grid height="100%" item xs={12}>
           <Stepper
             className="custom-stepper"
             activeStep={activeStep}
             alternativeLabel
+            sx={{ margin: "auto" }}
           >
             <Step>
               <StepLabel
@@ -53,7 +169,8 @@ const Details = () => {
                   fontSize: "20px",
 
                   "& .MuiStepLabel-alternativeLabel": {
-                    fontSize: "20px",
+                    fontSize: "17px",
+                    marginTop: "2px !important",
                     color: "#020043",
                   },
                 }}
@@ -68,7 +185,8 @@ const Details = () => {
                   fontSize: "20px",
 
                   "& .MuiStepLabel-alternativeLabel": {
-                    fontSize: "20px",
+                    fontSize: "17px",
+                    marginTop: "2px !important",
                     color: "#020043",
                   },
                 }}
@@ -83,7 +201,8 @@ const Details = () => {
                   fontSize: "20px",
 
                   "& .MuiStepLabel-alternativeLabel": {
-                    fontSize: "20px",
+                    fontSize: "17px",
+                    marginTop: "2px !important",
                     color: "#020043",
                   },
                 }}
@@ -98,7 +217,8 @@ const Details = () => {
                   fontSize: "20px",
 
                   "& .MuiStepLabel-alternativeLabel": {
-                    fontSize: "20px",
+                    fontSize: "17px",
+                    marginTop: "2px !important",
                     color: "#020043",
                   },
                 }}
@@ -109,73 +229,138 @@ const Details = () => {
           </Stepper>
 
           {activeStep === 0 && (
-            <div>
-              <Profile />
-            </div>
+            <Container>
+              <Profile
+                profileDetails={profileDetails}
+                setProfileDetails={setProfileDetails}
+                validateProfile={validateProfile}
+              />
+            </Container>
           )}
           {activeStep === 1 && (
-            <div>
-              <Tax_Form />
-            </div>
+            <Container>
+              <Tax_Form
+                taxFormDetails={taxFormDetails}
+                setTaxFormDetails={setTaxFormDetails}
+              />
+            </Container>
           )}
           {activeStep === 2 && (
-            <div>
-              <Account_Form />
-            </div>
+            <Container>
+              <Account_Form
+                accountDetails={accountDetails}
+                setAccountDetails={setAccountDetails}
+              />
+            </Container>
           )}
           {activeStep === 3 && (
-            <div>
-              <Material />
-            </div>
+            <Container>
+              <Material
+                setUpdatedMaterialList={setUpdatedMaterialList}
+                updatedMaterialList={updatedMaterialList}
+              />
+            </Container>
           )}
+          <Box
+            sx={{
+              width: "100%",
+              position: "fixed",
+              marginLeft: "100px",
 
-          <div>
-            <Button
-              variant="contained"
-              disabled={activeStep === 0}
-              onClick={handleBack}
-              color="error"
-              // sx={{
-              //   backgroundColor: "red",
-              //   color: "white",
-              // }}
-            >
-              Back
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleNext}
+              bottom: 0,
+              left: 0,
+              background: "white",
+            }}
+          >
+            <Box
               sx={{
-                backgroundColor: "#020043",
-                color: "#FFD500",
-                padding: "5px 10px",
-                marginLeft: "1rem",
-                cursor: "pointer",
-                "&:focus": {
-                  color: "#FFD500",
-                  backgroundColor: "#020043",
-                },
-                "&:hover": {
-                  color: "#FFD500",
-                  backgroundColor: "#020043",
-                },
+                //position: 'absolute',
+                maxWidth: "1200px",
+                width: "1200px",
+                margin: "auto",
+
+                bottom: 0,
+                left: 0,
+                paddingX: "1rem",
+                paddingY: "1rem",
               }}
             >
-              {activeStep === 3 ? "Finish" : "Next"}
-            </Button>
-            <Button
-              onClick={handleSubmit}
-              color="success"
-              variant="contained"
-              sx={{
-                marginLeft: "1rem",
-              }}
-            >
-              {" "}
-              submit
-            </Button>
-          </div>
+              {activeStep > 0 ? (
+                <Button
+                  variant="contained"
+                  disabled={activeStep === 0}
+                  onClick={handleBack}
+                  color="error"
+                  sx={{
+                    padding: "0.3rem",
+                  }}
+                >
+                  Back
+                </Button>
+              ) : (
+                ""
+              )}
+              {activeStep < 3 ? (
+                <Grid
+                  container
+                  direction="row"
+                  justifyContent="flex-end"
+                  alignItems="center"
+                >
+                  <Grid>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={handleNext}
+                      sx={{
+                        backgroundColor: "#020043",
+                        color: "#FFD500",
+                        padding: "5px 10px",
+                        marginLeft: "1rem",
+                        cursor: "pointer",
+                        "&:focus": {
+                          color: "#FFD500",
+                          backgroundColor: "#020043",
+                        },
+                        "&:hover": {
+                          color: "#FFD500",
+                          backgroundColor: "#020043",
+                        },
+                      }}
+                    >
+                      Next
+                    </Button>
+                  </Grid>
+                </Grid>
+              ) : (
+                ""
+              )}
+              {activeStep === 3 ? (
+                <Grid
+                  container
+                  direction="row"
+                  justifyContent="flex-end"
+                  alignItems="center"
+                >
+                  <Grid>
+                    <Button
+                      onClick={handleSubmit}
+                      color="success"
+                      variant="contained"
+                      sx={{
+                        marginLeft: "1rem",
+                      }}
+                    >
+                      {" "}
+                      submit
+                    </Button>
+                  </Grid>
+                </Grid>
+              ) : (
+                ""
+              )}
+            </Box>
+          </Box>
         </Grid>
       </Grid>
     </div>

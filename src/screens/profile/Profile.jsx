@@ -15,16 +15,7 @@ import {
 } from "../../action/form_action/form_actions";
 import { checkRefreshData } from "../../action/splash/splase_action";
 
-const Profile = () => {
-  const [profileDetails, setProfileDetails] = useState({
-    VendorName: "",
-    EmailId: "",
-    MobileNumber: "",
-    Address: "",
-    CountryId: "", //country
-    StateId: "", //state
-    CityId: "", //city
-  });
+const Profile = ({ profileDetails, setProfileDetails }) => {
   const [countryStateCity, setCountryStateCity] = useState([]);
   const [countryList, setCountryList] = useState([]);
   const [stateList, setStateList] = useState([]);
@@ -39,7 +30,7 @@ const Profile = () => {
     });
     setStateList(getStateList(countryStateCity, value));
   };
-  console.log("data", profileDetails);
+  // console.log("data", profileDetails);
   const handleStateChange = (event) => {
     const { name, value } = event.target;
     console.log("name--value", name, value);
@@ -70,9 +61,9 @@ const Profile = () => {
     var result = getStaticData();
     setCountryStateCity(result[0]);
     var tempCountryList = getcountryStateCityList(result[0]);
-
+    console.log("tempCountryList", getcountryStateCityList(result[0]));
     setCountryList(tempCountryList);
-    console.log(":sdvhdsgbhhhv", setProfileDetails);
+    // console.log(":sdvhdsgbhhhv", setProfileDetails);
     // //
     var stateList = getStateList(
       result[0],
@@ -94,7 +85,7 @@ const Profile = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log("Updating state:", { [name]: value });
+    /// console.log("Updating state:", { [name]: value });
 
     setProfileDetails((prevDetails) => ({
       ...prevDetails,
@@ -104,27 +95,12 @@ const Profile = () => {
   };
 
   // svsv
-  const handleEditProfile = () => {
-    const user = localStorage.getItem("user")
-      ? JSON.parse(localStorage.getItem("user"))
-      : {};
-    let temp = {
-      ...user,
-      ...profileDetails,
-      // AccountTypeId: accountDetails.AccountTypeId === "Saving" ? 1 : 2,
-    };
-    localStorage.setItem("user", JSON.stringify(temp));
-    // console.log("scbhhsdv", temp)
-    setChangesSaved(true);
-  };
 
   return (
     <Container
-      maxWidth="sm"
       sx={{
-        marginTop: "1rem",
-        border: "10px solid  #E0EEF7",
-        padding: "2rem",
+        maxWidth: "800px",
+        paddingX: "2rem",
       }}
     >
       <Typography
@@ -132,11 +108,11 @@ const Profile = () => {
           fontWeight: "600",
           fontSize: "20px",
           color: "#020043",
-          textAlign: "center",
-          padding: "1rem",
+          textAlign: "left",
+          paddingY: "1rem",
         }}
       >
-        Profile
+        Personal Information
       </Typography>
       <Grid
         container
@@ -152,6 +128,7 @@ const Profile = () => {
             name="VendorName"
             value={profileDetails.VendorName}
             onChange={handleChange}
+            disabled
           />
         </Grid>
         <Grid item xs={6}>
@@ -161,6 +138,7 @@ const Profile = () => {
             name="EmailId"
             value={profileDetails.EmailId}
             onChange={handleChange}
+            disabled
           />
         </Grid>
         <Grid item xs={6}>
@@ -170,6 +148,7 @@ const Profile = () => {
             name="MobileNumber"
             value={profileDetails.MobileNumber}
             onChange={handleChange}
+            disabled
           />
         </Grid>
         <Grid item xs={6}>
@@ -235,35 +214,6 @@ const Profile = () => {
               </MenuItem>
             ))}
           </TextField>
-        </Grid>
-
-        {console.log("sdbhsdv", cityList)}
-        <Grid item xs={12}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleEditProfile}
-            disabled={changesSaved}
-            sx={{
-              marginTop: "0.5rem",
-              width: "160px",
-              backgroundColor: "#020043",
-              color: "#FFD500",
-              padding: "5px 10px",
-              borderRadius: "5px",
-              cursor: "pointer",
-              "&:focus": {
-                color: "#FFD500",
-                backgroundColor: "#020043",
-              },
-              "&:hover": {
-                color: "#FFD500",
-                backgroundColor: "#020043",
-              },
-            }}
-          >
-            {changesSaved ? "Saved" : "Save Changes"}
-          </Button>
         </Grid>
       </Grid>
     </Container>

@@ -4,7 +4,7 @@ import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import { Link, useNavigate } from "react-router-dom";
 import "../../css/login/login.css";
-
+import VerifiedIcon from "@mui/icons-material/Verified";
 import {
   Alert,
   Button,
@@ -359,12 +359,23 @@ const Registration = () => {
                         endAdornment={
                           <InputAdornment position="end">
                             <Typography
-                              onClick={handleOpenEmailDialog}
+                              onClick={
+                                emailDialogtext ? null : handleOpenEmailDialog
+                              }
                               style={{
                                 fontSize: "14px",
                                 cursor: "pointer",
+                                alignItems: emailDialogtext
+                                  ? "flex-start"
+                                  : "center",
+
+                                color: emailDialogtext ? "green" : "#2196F3",
                               }}
                             >
+                              {emailDialogtext ? (
+                                <VerifiedIcon sx={{ mt: 0.2 }} />
+                              ) : null}
+
                               {emailDialogtext ? "Verified" : "Verify Email"}
                             </Typography>
                           </InputAdornment>
@@ -389,12 +400,21 @@ const Registration = () => {
                         endAdornment={
                           <InputAdornment position="end">
                             <Typography
-                              onClick={handleOpenPhoneDialog}
+                              onClick={
+                                PhoneNoDialogtext ? null : handleOpenPhoneDialog
+                              }
                               style={{
                                 fontSize: "14px",
                                 cursor: "pointer",
+                                alignItems: PhoneNoDialogtext
+                                  ? "flex-start"
+                                  : "center",
+                                color: PhoneNoDialogtext ? "green" : "#2196F3",
                               }}
                             >
+                              {PhoneNoDialogtext ? (
+                                <VerifiedIcon sx={{ mt: 0.2 }} />
+                              ) : null}
                               {PhoneNoDialogtext
                                 ? "Verified"
                                 : "Verify Phone number"}

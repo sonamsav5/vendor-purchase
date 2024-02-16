@@ -10,9 +10,9 @@ import { checkRefreshData } from "./action/splash/splase_action";
 import ProtectedRoute from "./service/protected_route";
 import DashBoard_Layout from "./component/Layouts/Dashboard_Layout";
 import Enquiry_Material from "./screens/vendor_dashboard/component/Enquiry_Material";
-import Material_Table from "./screens/vendor_dashboard/component/material_table/Material_Table";
-import EnquiryMaterial from "./screens/enquiryMaterial/EnquiryMaterial";
+import MyMaterials from "./screens/my-materials/MyMaterials";
 import MaterialPricesTable from "./screens/enquiryMaterial/MaterialPricesTable";
+import EnquiryMaterial from "./screens/enquiryMaterial/EnquiryMaterial";
 
 function App() {
   useEffect(() => {
@@ -41,22 +41,22 @@ function App() {
           }
         />
         <Route
-        path="/materialList"
-        element={
-          <ProtectedRoute
-            children={<DashBoard_Layout children={<EnquiryMaterial />} />}
-          />
-        }
-      />
-      <Route
-      path="/materialPricesTable"
-      element={
-        <ProtectedRoute
-          children={<DashBoard_Layout children={<MaterialPricesTable />} />}
+          path="/materialList"
+          element={
+            <ProtectedRoute
+              children={<DashBoard_Layout children={<EnquiryMaterial />} />}
+            />
+          }
         />
-      }
-    />
-      
+        <Route
+          path="/materialPricesTable"
+          element={
+            <ProtectedRoute
+              children={<DashBoard_Layout children={<MaterialPricesTable />} />}
+            />
+          }
+        />
+
         <Route
           path="/enquiryMaterial"
           element={
@@ -65,11 +65,12 @@ function App() {
             />
           }
         />
+
         <Route
-          path="/materialtable"
+          path="/my_material"
           element={
             <ProtectedRoute
-              children={<DashBoard_Layout children={<Material_Table />} />}
+              children={<DashBoard_Layout children={<MyMaterials />} />}
             />
           }
         />

@@ -12,19 +12,9 @@ import {
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { checkRefreshData } from "../../action/splash/splase_action";
-const Tax_Form = () => {
+const Tax_Form = ({ taxFormDetails, setTaxFormDetails }) => {
   // const navigate = useNavigate();
 
-  const [taxFormDetails, setTaxFormDetails] = useState({
-    PanNumber: "",
-    GST: "",
-    CGST: "",
-    IGST: "",
-    SGST: "",
-    PanCardUrl: "",
-    UTGST: "",
-    GSTUrl: "",
-  });
   // const [uploadedFileUrl, setUploadedFileUrl] = useState("");
   const [changesSaved, setChangesSaved] = useState(false);
 
@@ -51,37 +41,22 @@ const Tax_Form = () => {
       [fieldName]: URL.createObjectURL(file),
     }));
   };
+
   useEffect(() => {
-    console.log("useEffect triggered");
     const storedData = JSON.parse(localStorage.getItem("user")) || {};
     setTaxFormDetails((prevDetails) => ({
       ...prevDetails,
       ...storedData,
     }));
+    console.log(storedData)
     checkRefreshData();
   }, []);
-
-  const handleEditForm = () => {
-    const user = localStorage.getItem("user")
-      ? JSON.parse(localStorage.getItem("user"))
-      : {};
-    let temp = {
-      ...user,
-      ...taxFormDetails,
-    };
-    localStorage.setItem("user", JSON.stringify(temp));
-    setChangesSaved(true);
-
-  };
-
-  console.log("sggc", taxFormDetails);
+  console.log(taxFormDetails)
   return (
     <Container
-      maxWidth="sm"
       sx={{
-        marginTop: "1rem",
-        border: "10px solid  #E0EEF7",
-        padding: "2rem",
+        maxWidth: "800px",
+        paddingX: "2rem",
       }}
     >
       <Typography
@@ -89,8 +64,8 @@ const Tax_Form = () => {
           fontWeight: "600",
           fontSize: "20px",
           color: "#020043",
-          textAlign: "center",
-          padding: "1rem",
+          textAlign: "left",
+          paddingY: "1rem",
         }}
       >
         Tax
@@ -157,9 +132,9 @@ const Tax_Form = () => {
             onChange={handleChange}
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={6}>
           <TextField
-            label="GST URL"
+            label="GST Document"
             fullWidth
             name="GSTUrl"
             value={taxFormDetails.GSTUrl}
@@ -188,9 +163,9 @@ const Tax_Form = () => {
             }}
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={6}>
           <TextField
-            label="Pan Card URL"
+            label="Pan Card Document"
             fullWidth
             name="PanCardUrl"
             value={taxFormDetails.PanCardUrl}
@@ -218,33 +193,6 @@ const Tax_Form = () => {
               ),
             }}
           />
-        </Grid>
-        <Grid item xs={12}>
-        <Button
-        variant="contained"
-        color="primary"
-        onClick={handleEditForm}
-        disabled={changesSaved}
-        sx={{
-          marginTop: "0.5rem",
-          width: "160px",
-          backgroundColor: "#020043",
-          color: "#FFD500",
-          padding: "5px 10px",
-          borderRadius: "5px",
-          cursor: "pointer",
-          "&:focus": {
-            color: "#FFD500",
-            backgroundColor: "#020043",
-          },
-          "&:hover": {
-            color: "#FFD500",
-            backgroundColor: "#020043",
-          },
-        }}
-      >
-        {changesSaved ? "Saved" : "Save Changes"}
-      </Button>
         </Grid>
       </Grid>
     </Container>

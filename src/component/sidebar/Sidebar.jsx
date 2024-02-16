@@ -12,11 +12,8 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import MenuIcon from "@mui/icons-material/Menu";
-import Toolbar from "@mui/material/Toolbar";
-import Collapse from "@mui/material/Collapse";
-import ExpandLess from "@mui/icons-material/ExpandLess";
-import ExpandMore from "@mui/icons-material/ExpandMore";
-import { Typography, Avatar, Button } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import { Typography, Avatar, Button, Stack } from "@mui/material";
 import MarkEmailReadOutlinedIcon from "@mui/icons-material/MarkEmailReadOutlined";
 import SpaceDashboardOutlinedIcon from "@mui/icons-material/SpaceDashboardOutlined";
 import DraftsOutlinedIcon from "@mui/icons-material/DraftsOutlined";
@@ -24,29 +21,24 @@ import LocalOfferOutlinedIcon from "@mui/icons-material/LocalOfferOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import images from "../../utils/images/common/image_map";
 
-const drawerWidth = 280;
-
-const Sidebar = () => {
+const Sidebar = ({ navbar, setNavbar, drawerWidth }) => {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [openSubMenu, setOpenSubMenu] = React.useState(false);
   const navigate = useNavigate();
-
+  const location = useLocation();
   // const [photoUrl, setPhotoUrl] = useState(null);
-  // const [isPhotoAdded, setIsPhotoAdded] = useState(false);
+  const [currPath, setCurrPath] = useState(location.pathname);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [emailId, setEmailId] = useState("");
   const [role, setRole] = useState("");
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
+    setNavbar(!navbar);
   };
 
   const handleSubMenuToggle = () => {
     setOpenSubMenu(!openSubMenu);
-  };
-
-  const handleListItemClick = (link) => {
-    setActiveLink(link);
   };
 
   const roles = JSON.parse(localStorage.getItem("user")) || {};
@@ -79,9 +71,16 @@ const Sidebar = () => {
     setRole(storedUserDetails.VendorType || "");
     setEmailId(storedUserDetails.EmailId || "");
   }, []);
+
+  useEffect(() => {
+    setCurrPath(location.pathname);
+  }, [location.pathname]);
+
+  console.log("activeLink", activeLink);
+  console.log("location.pathname", location.pathname);
   const drawer = (
     <div>
-      <Box>
+      <Box sx={{ position: "relative" }}>
         <Avatar
           alt="Profile Photo"
           sx={{
@@ -134,7 +133,7 @@ const Sidebar = () => {
         sx={{
           marginTop: "1rem",
           "& .MuiListItem-root:hover": {
-            backgroundColor: "white",
+            //  backgroundColor: "white",
             color: "black",
             borderTopRightRadius: "4px",
             borderBottomRightRadius: "4px",
@@ -148,25 +147,29 @@ const Sidebar = () => {
             to="/vendordashboard"
             sx={{
               backgroundColor:
-                activeLink === dashboardLink ? "#4744b1" : "transparent",
-              color: activeLink === dashboardLink ? "black" : "inherit",
+                "/vendordashboard" === currPath ? "#4744b1" : "transparent",
+              color: "/vendordashboard" === currPath ? "black" : "inherit",
 
               "&:hover": {
-                backgroundColor: "white",
+                backgroundColor: "#4744b1",
                 color: "black",
                 borderTopRightRadius: "4px",
                 borderBottomRightRadius: "4px",
                 borderTopLeftRadius: "5px",
               },
             }}
-            onClick={() => handleListItemClick(dashboardLink)}
+            onClick={() => setActiveLink("/vendordashboard")}
           >
             <ListItemIcon
               sx={{
-                color: activeLink === dashboardLink ? "white" : "white",
+                color: activeLink === location.pathname ? "white" : "white",
               }}
             >
-              <SpaceDashboardOutlinedIcon />
+              <img
+                src={images.dashboardImg}
+                alt=""
+                style={{ width: "20px", height: "20px" }}
+              />
             </ListItemIcon>
             <ListItemText
               primary="Dashboard"
@@ -178,13 +181,34 @@ const Sidebar = () => {
         </ListItem>
 
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/Details">
+          <ListItemButton
+            component={Link}
+            to="/Details"
+            sx={{
+              backgroundColor:
+                "/Details" === currPath ? "#4744b1" : "transparent",
+              color: "/Details" === currPath ? "black" : "inherit",
+
+              "&:hover": {
+                backgroundColor: "#4744b1",
+                color: "black",
+                borderTopRightRadius: "4px",
+                borderBottomRightRadius: "4px",
+                borderTopLeftRadius: "5px",
+              },
+            }}
+            onClick={() => setActiveLink("/Details")}
+          >
             <ListItemIcon
               sx={{
                 color: "white",
               }}
             >
-              <DraftsOutlinedIcon />
+              <img
+                src={images.profileImg}
+                alt=""
+                style={{ width: "20px", height: "20px" }}
+              />
             </ListItemIcon>
             <ListItemText
               primary="Profile"
@@ -198,17 +222,26 @@ const Sidebar = () => {
         <ListItem disablePadding>
           <ListItemButton
             sx={{
+              backgroundColor:
+                "" === location.pathname ? "#4744b1" : "transparent",
+              color: "" === location.pathname ? "black" : "inherit",
+
               "&:hover": {
-                backgroundColor: "white",
+                backgroundColor: "#4744b1",
                 color: "black",
                 borderTopRightRadius: "4px",
                 borderBottomRightRadius: "4px",
                 borderTopLeftRadius: "5px",
               },
             }}
+            onClick={() => setActiveLink("/enquiryMaterial")}
           >
             <ListItemIcon sx={{ color: "white" }}>
-              <LogoutOutlinedIcon />
+              <img
+                src={images.cashPaymentImg}
+                alt=""
+                style={{ width: "20px", height: "20px" }}
+              />
             </ListItemIcon>
             <ListItemText
               primary="My Payments"
@@ -218,20 +251,34 @@ const Sidebar = () => {
             />
           </ListItemButton>
         </ListItem>
+
         <ListItem disablePadding>
           <ListItemButton
+            component={Link}
+            to="/my_material"
             sx={{
+              backgroundColor:
+                "/my_material" === location.pathname
+                  ? "#4744b1"
+                  : "transparent",
+              color: "/my_material" === location.pathname ? "black" : "inherit",
+
               "&:hover": {
-                backgroundColor: "white",
+                backgroundColor: "#4744b1",
                 color: "black",
                 borderTopRightRadius: "4px",
                 borderBottomRightRadius: "4px",
                 borderTopLeftRadius: "5px",
               },
             }}
+            onClick={() => setActiveLink("/my_material")}
           >
             <ListItemIcon sx={{ color: "white" }}>
-              <LogoutOutlinedIcon />
+              <img
+                src={images.rawMaterialImg}
+                alt=""
+                style={{ width: "20px", height: "20px" }}
+              />
             </ListItemIcon>
             <ListItemText
               primary="My Material"
@@ -253,10 +300,11 @@ const Sidebar = () => {
                 borderTopLeftRadius: "5px",
               },
             }}
+            onClick={() => setActiveLink("/vendordashboard")}
           >
             <ListItemIcon>
               <img
-                src={images.logo}
+                src={images.complaintImg}
                 alt="Your Image"
                 style={{ width: "24px", height: "24px", marginRight: "8px" }}
               />
@@ -270,6 +318,7 @@ const Sidebar = () => {
             />
           </ListItemButton>
         </ListItem>
+
         <ListItem disablePadding>
           <ListItemButton
             sx={{
@@ -281,9 +330,14 @@ const Sidebar = () => {
                 borderTopLeftRadius: "5px",
               },
             }}
+            onClick={() => setActiveLink("/vendordashboard")}
           >
             <ListItemIcon sx={{ color: "white" }}>
-              <LogoutOutlinedIcon />
+              <img
+                src={images.termsImg}
+                alt=""
+                style={{ width: "20px", height: "20px" }}
+              />
             </ListItemIcon>
             <ListItemText
               primary="Terms & Condition"
@@ -293,6 +347,7 @@ const Sidebar = () => {
             />
           </ListItemButton>
         </ListItem>
+
         <ListItem disablePadding>
           <ListItemButton
             sx={{
@@ -304,9 +359,14 @@ const Sidebar = () => {
                 borderTopLeftRadius: "5px",
               },
             }}
+            onClick={() => setActiveLink("/vendordashboard")}
           >
             <ListItemIcon sx={{ color: "white" }}>
-              <LogoutOutlinedIcon />
+              <img
+                src={images.moreImg}
+                alt=""
+                style={{ width: "20px", height: "20px" }}
+              />
             </ListItemIcon>
             <ListItemText
               primary="More"
@@ -332,7 +392,11 @@ const Sidebar = () => {
             }}
           >
             <ListItemIcon sx={{ color: "white" }}>
-              <LogoutOutlinedIcon />
+              <img
+                src={images.logOutImg}
+                alt=""
+                style={{ width: "20px", height: "20px" }}
+              />
             </ListItemIcon>
             <ListItemText
               primary="Logout"
@@ -353,31 +417,33 @@ const Sidebar = () => {
       <AppBar
         position="fixed"
         sx={{
-          backgroundColor: "white",
+          backgroundColor: "#020043",
           height: "20px",
           padding: "none",
           boxShadow: "none",
           color: "black",
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
+          height: "3rem",
+          // width: { sm: `calc(100% - ${drawerWidth}px)` },
           ml: { sm: `${drawerWidth}px` },
         }}
       >
-        <Toolbar>
-          <IconButton
-            color="inherit"
+        <Stack height="100%" padding={1} justifyContent="center">
+          <MenuIcon
+            sx={{ color: "white", fontSize: 30, cursor: "pointer" }}
             onClick={handleDrawerToggle}
-            sx={{ padding: "0px", mr: 2, display: { sm: "none" } }}
-          >
-            <MenuIcon />
-          </IconButton>
-        </Toolbar>
+          />
+        </Stack>
       </AppBar>
       <Box
         component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+        sx={{
+          width: { sm: drawerWidth },
+          display: navbar ? "block" : "none",
+          flexShrink: { sm: 0 },
+        }}
         aria-label="mailbox folders"
       >
-        <Drawer
+        {/* <Drawer
           variant="temporary"
           open={mobileOpen}
           onClose={handleDrawerToggle}
@@ -385,7 +451,7 @@ const Sidebar = () => {
             keepMounted: true,
           }}
           sx={{
-            display: { xs: "block", sm: "none" },
+            display: mobileOpen ? "block":"none",
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
               width: drawerWidth,
@@ -393,22 +459,23 @@ const Sidebar = () => {
               color: "white",
               border: "none",
               boxShadow: " 0 10px 10px rgb(28,37,54)",
+              border:'4px solid red'
             },
           }}
         >
           {drawer}
-        </Drawer>
+        </Drawer> */}
         <Drawer
           variant="permanent"
           sx={{
-            display: { xs: "none", sm: "block" },
+            display: navbar ? "block" : "none",
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
               width: drawerWidth,
               backgroundColor: "#020043",
               color: "white",
               border: "none",
-              borderTopRightRadius: "5px",
+              // borderTopRightRadius: "5px",
               boxShadow: " 0 20px 15px rgb(28,37,54)",
             },
           }}

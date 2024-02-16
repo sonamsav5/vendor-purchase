@@ -42,7 +42,8 @@ const Login = () => {
     }
   };
 
-  const generateOTP = async () => {
+  const generateOTP = async (e) => {
+    if (e) e.preventDefault()
     if (phoneNumber.length !== 10) {
       return;
     }
@@ -106,7 +107,17 @@ const Login = () => {
             }}
           />
         </Typography>
-        <form action="index.html" autoComplete="off">
+        <form
+          action="index.html"
+          onSubmit={(e) => {
+            if (isPhoneCompleted) {
+              signInUser(e);
+            } else {
+              generateOTP(e);
+            }
+            setIsDividerVisible(true);
+          }}
+          autoComplete="off">
           <Grid
             container
             direction="row"
@@ -160,6 +171,11 @@ const Login = () => {
                   xs={12}
                   sx={{
                     marginTop: "2rem",
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      signInUser()
+                    }
                   }}
                 >
                   <OTPInput

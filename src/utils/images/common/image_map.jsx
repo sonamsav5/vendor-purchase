@@ -8,7 +8,14 @@ import selfrejected from "../rejected (1) (1).png";
 import orderdelivered from "../prioritize (1).png";
 import pending from "../time.png";
 import quotation from "../quotation.png";
-
+import dashboardImg from '../../../images/dashboard.png'
+import termsImg from '../../../images/terms.png'
+import complaintImg from '../../../images/compliant.png'
+import rawMaterialImg from '../../../images/raw-materials.png'
+import cashPaymentImg from '../../../images/cash-payment.png'
+import profileImg from '../../../images/profile.png'
+import moreImg from '../../../images/more.png'
+import logOutImg from '../../../images/power.png'
 
 const images = {
   loginimg,
@@ -18,6 +25,16 @@ const images = {
   re,
   received,
   selfrejected,
-  orderdelivered,pending, quotation
+  orderdelivered,
+  pending,
+  quotation,
+  dashboardImg,
+  cashPaymentImg,
+  rawMaterialImg,
+  complaintImg,
+  termsImg,
+  profileImg,
+  logOutImg,
+  moreImg
 };
 export default images;

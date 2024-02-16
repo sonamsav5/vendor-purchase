@@ -9,16 +9,16 @@ import {
   TextField,
   InputAdornment,
   IconButton,
+  Grid,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { material_list as materialList } from "./material_list";
 import { contract_list } from "./contract_list";
 import { checkRefreshData } from "../../action/splash/splase_action";
 
-const Material = () => {
+const Material = ({ updatedMaterialList, setUpdatedMaterialList }) => {
   const [selectedItems, setSelectedItems] = useState({});
   const [search, setSearch] = useState("");
-  const [updatedMaterialList, setUpdatedMaterialList] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [materialsToRender, setMaterialsToRender] = useState([]);
   const [contractResults, setContractResults] = useState([]);
@@ -85,17 +85,6 @@ const Material = () => {
     setContractsToRender(search ? filteredContracts : contract_list);
   };
 
-  const handleEditProfile = () => {
-    const user = localStorage.getItem("user")
-      ? JSON.parse(localStorage.getItem("user"))
-      : {};
-    localStorage.setItem(
-      "user",
-      JSON.stringify({ ...user, updatedMaterialList })
-    );
-    setChangesSaved(true);
-  };
-
   useEffect(() => {
     const initialItems = isSupplier
       ? {}
@@ -112,13 +101,16 @@ const Material = () => {
     checkRefreshData();
   }, [isSupplier, search, searchResults, contractResults]);
 
+  useEffect(() => {
+    handleSearch();
+  }, [search]);
+
   return (
     <Container
-      maxWidth="lg"
       sx={{
-        marginTop: "2rem",
-        border: "1px solid #E0EEF7",
-        padding: "2rem",
+        maxWidth: "800px",
+        paddingX: "2rem",
+        maxHeight: "100%",
       }}
     >
       <Typography variant="h5" sx={{ marginBottom: "1rem" }}>
@@ -139,11 +131,13 @@ const Material = () => {
             </InputAdornment>
           ),
         }}
-        sx={{ marginBottom: "1rem" }}
+        sx={{ marginBottom: "1rem", width: "390px" }}
       />
+
       <List>
-        {isSupplier
-          ? materialsToRender.map((material) => (
+        {isSupplier ? (
+          materialsToRender.length ? (
+            materialsToRender.map((material) => (
               <ListItem
                 key={`${material.MaterialMasterId}_${material.MaterialSubTypeMasterId}`}
                 sx={{
@@ -166,50 +160,36 @@ const Material = () => {
                 />
               </ListItem>
             ))
-          : contractsToRender.map((contractor) => (
-              <ListItem
-                key={contractor.ContractMasterId}
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                {contractor.Contract}
-                <Checkbox
-                  checked={selectedItems[contractor.ContractMasterId] || false}
-                  onChange={() =>
-                    handleCheckboxChange(contractor.ContractMasterId, true)
-                  }
-                />
-              </ListItem>
-            ))}
+          ) : (
+            <ListItem>
+              <Typography color="black">No Data</Typography>
+            </ListItem>
+          )
+        ) : contractsToRender.length ? (
+          contractsToRender.map((contractor) => (
+            <ListItem
+              key={contractor.ContractMasterId}
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              {contractor.Contract}
+              <Checkbox
+                checked={selectedItems[contractor.ContractMasterId] || false}
+                onChange={() =>
+                  handleCheckboxChange(contractor.ContractMasterId, true)
+                }
+              />
+            </ListItem>
+          ))
+        ) : (
+          <ListItem>
+            <Typography color="black">No Data</Typography>
+          </ListItem>
+        )}
       </List>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleEditProfile}
-        disabled={changesSaved}
-        sx={{
-          marginTop: "0.5rem",
-          width: "160px",
-          backgroundColor: "#020043",
-          color: "#FFD500",
-          padding: "5px 10px",
-          borderRadius: "5px",
-          cursor: "pointer",
-          "&:focus": {
-            color: "#FFD500",
-            backgroundColor: "#020043",
-          },
-          "&:hover": {
-            color: "#FFD500",
-            backgroundColor: "#020043",
-          },
-        }}
-      >
-        {changesSaved ? "Saved" : "Save Changes"}
-      </Button>
     </Container>
   );
 };

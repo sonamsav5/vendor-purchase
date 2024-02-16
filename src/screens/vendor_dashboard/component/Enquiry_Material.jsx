@@ -9,6 +9,7 @@ import {
   Menu,
   MenuItem,
   Button,
+  Container,
 } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -19,6 +20,9 @@ import images from "../../../utils/images/common/image_map";
 import Data_Table from "../../../component/data_table/Data_Table";
 import { material_columns } from "./material_table/material_columns";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import CloseIcon from '@mui/icons-material/Close';
+
 
 const Enquiry_Material = () => {
   const location = useLocation();
@@ -67,7 +71,7 @@ const Enquiry_Material = () => {
   }, []);
   // console.log("vfv f vf",brokerTableData)
   return (
-    <div style={{ marginTop: "4rem" }}>
+    <Container maxWidth="lg" style={{ padding: "0.1rem" }}>
       <Typography
         sx={{
           fontSize: "20px",
@@ -111,6 +115,24 @@ const Enquiry_Material = () => {
                         <RemoveRedEyeIcon />
                       </div>
                     )}
+                    {location.state.flag === "SQ" && (
+                      <div
+                        className="view-button"
+                        style={{ cursor: "pointer", color: "green" }}
+                        onClick={() => handleViewClick(params.row)}
+                      >
+                        <CheckCircleOutlineIcon />
+                      </div>
+                    )}
+                    {location.state.flag === "RQ" && (
+                      <div
+                        className="view-button"
+                        style={{ cursor: "pointer", color: "red" }}
+                        onClick={() => handleViewClick(params.row)}
+                      >
+                        <CloseIcon />
+                      </div>
+                    )}
                   </div>
                 ),
               },
@@ -120,7 +142,7 @@ const Enquiry_Material = () => {
           />
         )}
       </div>
-    </div>
+    </Container>
   );
 };
 
