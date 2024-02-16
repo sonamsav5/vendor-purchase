@@ -14,6 +14,7 @@ import {
   getcountryStateCityList,
 } from "../../action/form_action/form_actions";
 import { checkRefreshData } from "../../action/splash/splase_action";
+import { profileState } from "../details/initialState";
 
 const Profile = ({ profileDetails, setProfileDetails }) => {
   const [countryStateCity, setCountryStateCity] = useState([]);
@@ -39,6 +40,22 @@ const Profile = ({ profileDetails, setProfileDetails }) => {
       [name]: value,
     });
     //setCityList(getCityList(countryStateCity, value));
+  };
+
+  // form validation
+  const [errors, setErrors] = useState({});
+  const validateProfile = () => {
+    const newErrors = {};
+    let isValid = true;
+    // Validate each field
+    for (const key in profileDetails) {
+      if (profileDetails[key] === "" && profileState[key] !== "") {
+        newErrors[key] = "This field is required";
+        isValid = false;
+      }
+    }
+    setErrors(newErrors); // Update error state
+    return isValid; // Return true if all fields are valid
   };
 
   useEffect(() => {
@@ -85,13 +102,14 @@ const Profile = ({ profileDetails, setProfileDetails }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    /// console.log("Updating state:", { [name]: value });
-
     setProfileDetails((prevDetails) => ({
       ...prevDetails,
       [name]: value,
     }));
-    setChangesSaved(false); // Reset changesSaved when there is a change in the form
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "",
+    }));
   };
 
   // svsv
@@ -158,6 +176,8 @@ const Profile = ({ profileDetails, setProfileDetails }) => {
             name="Address"
             value={profileDetails.Address}
             onChange={handleChange}
+            error={!!errors.Address} // Set error state based on existence of error message
+            helperText={errors.Address}
           />
         </Grid>
         <Grid item xs={6}>
@@ -168,6 +188,8 @@ const Profile = ({ profileDetails, setProfileDetails }) => {
             name="CountryId" // replace with country
             value={profileDetails.CountryId}
             onChange={handleCountryChange}
+            error={!!errors.CountryId} // Set error state based on existence of error message
+            helperText={errors.CountryId}
           >
             <MenuItem value="">Select Country</MenuItem>
             {countryList.map((option, index) => (
@@ -205,6 +227,8 @@ const Profile = ({ profileDetails, setProfileDetails }) => {
             name="CityId"
             value={profileDetails.CityId}
             onChange={handleStateChange}
+            error={!!errors.CityId} // Set error state based on existence of error message
+            helperText={errors.CityId}
             // disabled={!profileDetails.StateId}
           >
             <MenuItem value="">Select City</MenuItem>

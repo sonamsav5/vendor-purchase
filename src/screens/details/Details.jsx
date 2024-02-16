@@ -59,7 +59,6 @@ const Details = () => {
     if (activeStep === 0) handleEditProfile();
     if (activeStep === 1) handleEditTax();
     if (activeStep === 2) handleEditAccount();
- 
   };
 
   const validateProfile = (validationFunction) => {
@@ -93,9 +92,9 @@ const Details = () => {
   };
 
   const handleEditProfile = () => {
-    if(findEmptyKeys(profileDetails,profileState).length){
-      alert('All fields requred')
-      return
+    if (findEmptyKeys(profileDetails, profileState).length) {
+      alert("Please fill all the details");
+      return;
     }
     const user = localStorage.getItem("user")
       ? JSON.parse(localStorage.getItem("user"))
@@ -108,9 +107,9 @@ const Details = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
   const handleEditAccount = () => {
-    if(findEmptyKeys(accountDetails,accountState).length){
-      alert('All fields requred')
-      return
+    if (findEmptyKeys(accountDetails, accountState).length) {
+      alert("Please fill all the details");
+      return;
     }
     const user = localStorage.getItem("user")
       ? JSON.parse(localStorage.getItem("user"))
@@ -125,9 +124,9 @@ const Details = () => {
   };
 
   const handleEditTax = () => {
-    if(findEmptyKeys(taxFormDetails,taxState).length){
-      alert('All fields requred')
-      return
+    if (findEmptyKeys(taxFormDetails, taxState).length) {
+      alert("Please fill all the details");
+      return;
     }
     const user = localStorage.getItem("user")
       ? JSON.parse(localStorage.getItem("user"))
@@ -140,12 +139,12 @@ const Details = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
-  function findEmptyKeys(completeData , obj) {
+  function findEmptyKeys(completeData, obj) {
     const emptyKeys = [];
     for (const key in obj) {
       if (completeData.hasOwnProperty(key)) {
         const value = completeData[key];
-        if (value === null || value === undefined || value === '') {
+        if (value === null || value === undefined || value === "") {
           emptyKeys.push(key);
         }
       }
@@ -311,9 +310,12 @@ const Details = () => {
                 left: 0,
                 paddingX: "1rem",
                 paddingY: "1rem",
+                display: "flex",
+                justifyContent: "flex-end",
+                alignItems: "center",
               }}
             >
-              {activeStep > 0 ? (
+              {activeStep > 0 && (
                 <Button
                   variant="contained"
                   disabled={activeStep === 0}
@@ -321,53 +323,48 @@ const Details = () => {
                   color="error"
                   sx={{
                     padding: "0.3rem",
+                    marginRight: "1rem", // Add margin between Back and Next buttons
                   }}
                 >
                   Back
                 </Button>
-              ) : (
-                ""
               )}
-              {activeStep < 3 ? (
-                   <Button
-                   variant="contained"
-                   color="primary"
-                   onClick={handleNext}
-                   sx={{
-                     backgroundColor: "#020043",
-                     color: "#FFD500",
-                     padding: "5px 10px",
-                     marginLeft: "1rem",
-                     cursor: "pointer",
-                     "&:focus": {
-                       color: "#FFD500",
-                       backgroundColor: "#020043",
-                     },
-                     "&:hover": {
-                       color: "#FFD500",
-                       backgroundColor: "#020043",
-                     },
-                   }}
-                 >
-                   Next
-                 </Button>
-              ) : (
-                ""
+
+              {activeStep < 3 && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleNext}
+                  sx={{
+                    backgroundColor: "#020043",
+                    color: "#FFD500",
+                    padding: "5px 10px",
+                    cursor: "pointer",
+                    "&:focus": {
+                      color: "#FFD500",
+                      backgroundColor: "#020043",
+                    },
+                    "&:hover": {
+                      color: "#FFD500",
+                      backgroundColor: "#020043",
+                    },
+                  }}
+                >
+                  Next
+                </Button>
               )}
-              {activeStep === 3 ? (
-                    <Button
-                    onClick={handleSubmit}
-                    color="success"
-                    variant="contained"
-                    sx={{
-                      marginLeft: "1rem",
-                    }}
-                  >
-                    {" "}
-                    submit
-                  </Button>
-              ) : (
-                ""
+
+              {activeStep === 3 && (
+                <Button
+                  onClick={handleSubmit}
+                  color="success"
+                  variant="contained"
+                  sx={{
+                    marginLeft: "auto",
+                  }}
+                >
+                  submit
+                </Button>
               )}
             </Box>
           </Box>

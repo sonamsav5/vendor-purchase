@@ -12,6 +12,7 @@ import {
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { checkRefreshData } from "../../action/splash/splase_action";
+import { taxState } from "../details/initialState";
 const Tax_Form = ({ taxFormDetails, setTaxFormDetails }) => {
   // const navigate = useNavigate();
 
@@ -22,17 +23,35 @@ const Tax_Form = ({ taxFormDetails, setTaxFormDetails }) => {
   const [selectedGstCertificateFile, setSelectedGstCertificateFile] =
     useState(null);
   const [uploading, setUploading] = useState(false);
+// for error
+const [errors, setErrors] = useState({});
+const validateProfile = () => {
+  const newErrors = {};
+  let isValid = true;
+  // Validate each field
+  for (const key in taxFormDetails) {
+    if (taxFormDetails[key] === "" && taxState[key] !== "") {
+      newErrors[key] = "This field is required";
+      isValid = false;
+    }
+  }
+  setErrors(newErrors); // Update error state
+  return isValid; // Return true if all fields are valid
+};
 
-  // Event handlers
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setTaxFormDetails((prevDetails) => ({
-      ...prevDetails,
-      [name]: value,
-    }));
-    setChangesSaved(false); // Reset changesSaved when there is a change in the form
 
-  };
+
+const handleChange = (e) => {
+  const { name, value } = e.target;
+  setTaxFormDetails((prevDetails) => ({
+    ...prevDetails,
+    [name]: value,
+  }));
+  setErrors((prevErrors) => ({
+    ...prevErrors,
+    [name]: "",
+  }));
+};
 
   const handleFileUpload = (e, fieldName) => {
     const file = e.target.files[0];
@@ -83,6 +102,8 @@ const Tax_Form = ({ taxFormDetails, setTaxFormDetails }) => {
             name="PanNumber"
             value={taxFormDetails.PanNumber}
             onChange={handleChange}
+            error={!!errors.PanNumber} // Set error state based on existence of error message
+            helperText={errors.PanNumber}
           />
         </Grid>
         <Grid item xs={6}>
@@ -92,6 +113,8 @@ const Tax_Form = ({ taxFormDetails, setTaxFormDetails }) => {
             name="GST"
             value={taxFormDetails.GST}
             onChange={handleChange}
+            error={!!errors.CountryId} // Set error state based on existence of error message
+            helperText={errors.CountryId}
           />
         </Grid>
         <Grid item xs={6}>
@@ -101,6 +124,8 @@ const Tax_Form = ({ taxFormDetails, setTaxFormDetails }) => {
             name="CGST"
             value={taxFormDetails.CGST}
             onChange={handleChange}
+            error={!!errors.CountryId} // Set error state based on existence of error message
+            helperText={errors.CountryId}
           />
         </Grid>
         <Grid item xs={6}>
@@ -110,6 +135,7 @@ const Tax_Form = ({ taxFormDetails, setTaxFormDetails }) => {
             name="IGST"
             value={taxFormDetails.IGST}
             onChange={handleChange}
+            
           />
         </Grid>
         <Grid item xs={6}>
@@ -137,6 +163,8 @@ const Tax_Form = ({ taxFormDetails, setTaxFormDetails }) => {
             fullWidth
             name="GSTUrl"
             value={taxFormDetails.GSTUrl}
+            error={!!errors.GSTUrl} // Set error state based on existence of error message
+            helperText={errors.GSTUrl}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -168,6 +196,8 @@ const Tax_Form = ({ taxFormDetails, setTaxFormDetails }) => {
             fullWidth
             name="PanCardUrl"
             value={taxFormDetails.PanCardUrl}
+            error={!!errors.PanCardUrl} // Set error state based on existence of error message
+            helperText={errors.PanCardUrl}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">

@@ -14,6 +14,7 @@ import { getStaticData } from "../../action/form_action/form_actions";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { checkRefreshData } from "../../action/splash/splase_action";
+import { accountState } from "../details/initialState";
 const accountTypes = [
   {
     id: 1,
@@ -36,6 +37,20 @@ const Account_Form = ({ accountDetails, setAccountDetails }) => {
       ...prevDetails,
       AccountUrl: URL.createObjectURL(file),
     }));
+  };
+  const [errors, setErrors] = useState({});
+  const validateProfile = () => {
+    const newErrors = {};
+    let isValid = true;
+    // Validate each field
+    for (const key in accountDetails) {
+      if (accountDetails[key] === "" && accountState[key] !== "") {
+        newErrors[key] = "This field is required";
+        isValid = false;
+      }
+    }
+    setErrors(newErrors); // Update error state
+    return isValid; // Return true if all fields are valid
   };
 
   useEffect(() => {
@@ -63,7 +78,10 @@ const Account_Form = ({ accountDetails, setAccountDetails }) => {
       ...prevDetails,
       [name]: value,
     }));
-    setChangesSaved(false);
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "",
+    }));
   };
 
   return (
@@ -98,6 +116,8 @@ const Account_Form = ({ accountDetails, setAccountDetails }) => {
             name="AccountHolderName"
             value={accountDetails.AccountHolderName}
             onChange={handleChange}
+            error={!!errors.AccountHolderName} // Set error state based on existence of error message
+            helperText={errors.AccountHolderName}
           />
         </Grid>
         <Grid item xs={6}>
@@ -107,6 +127,8 @@ const Account_Form = ({ accountDetails, setAccountDetails }) => {
             name="AccountNumber"
             value={accountDetails.AccountNumber}
             onChange={handleChange}
+            error={!!errors.AccountNumber} // Set error state based on existence of error message
+            helperText={errors.AccountNumber}
           />
         </Grid>
         <Grid item xs={6}>
@@ -117,6 +139,8 @@ const Account_Form = ({ accountDetails, setAccountDetails }) => {
             select
             value={accountDetails.BankId}
             onChange={handleChange}
+            error={!!errors.BankId} // Set error state based on existence of error message
+            helperText={errors.BankId}
           >
             {bankList.map((option, index) => (
               <MenuItem key={index} value={option["BankNameId"]}>
@@ -132,6 +156,8 @@ const Account_Form = ({ accountDetails, setAccountDetails }) => {
             name="IFSC"
             value={accountDetails.IFSC}
             onChange={handleChange}
+            error={!!errors.IFSC} // Set error state based on existence of error message
+            helperText={errors.IFSC}
           />
         </Grid>
         <Grid item xs={6}>
@@ -142,6 +168,8 @@ const Account_Form = ({ accountDetails, setAccountDetails }) => {
             name="AccountTypeId"
             value={accountDetails.AccountTypeId || 1}
             onChange={handleChange}
+            error={!!errors.AccountTypeId} // Set error state based on existence of error message
+            helperText={errors.AccountTypeId}
           >
             {accountTypes.map((option, index) => (
               <MenuItem key={index} value={option.id}>
@@ -158,6 +186,8 @@ const Account_Form = ({ accountDetails, setAccountDetails }) => {
             name="MICR"
             value={accountDetails.MICR}
             onChange={handleChange}
+            error={!!errors.MICR} // Set error state based on existence of error message
+            helperText={errors.MICR}
           />
         </Grid>
         <Grid item xs={6}>
@@ -167,6 +197,8 @@ const Account_Form = ({ accountDetails, setAccountDetails }) => {
             name="BankAddress"
             value={accountDetails.BankAddress}
             onChange={handleChange}
+            error={!!errors.BankAddress} // Set error state based on existence of error message
+            helperText={errors.BankAddress}
           />
         </Grid>
         <Grid item xs={6}>
@@ -175,6 +207,8 @@ const Account_Form = ({ accountDetails, setAccountDetails }) => {
             fullWidth
             name="AccountUrl"
             value={accountDetails.AccountUrl}
+            error={!!errors.AccountUrl} // Set error state based on existence of error message
+            helperText={errors.AccountUrl}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">

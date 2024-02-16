@@ -132,6 +132,9 @@ const Registration = () => {
     return true;
   };
 
+  // 
+  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     var payload = {
@@ -225,14 +228,13 @@ const Registration = () => {
   const handleClosePhoneDialog = () => {
     setOpenPhoneDialog(false);
   };
-
   const handleEmailVerification = () => {
     if (verifyOTP(emailOtp, sentEmailOtp)) {
       handleCloseEmailDialog();
       handleDisableEmail();
-      //Error Message
     } else {
-      // Handle error case
+      // If OTP verification fails for email, show error message
+      handleSnackbarOpen("Wrong OTP for email verification. Please enter the correct OTP.");
     }
   };
 
@@ -247,11 +249,11 @@ const Registration = () => {
 
   const handlePhoneNoVerification = () => {
     if (verifyOTP(phoneOtp, sentPhoneOtp)) {
-      handleClosePhoneNoDialog();
+      handleClosePhoneDialog();
       handleDisablePhoneNo();
-      //Error Message
     } else {
-      // Handle error case
+      // If OTP verification fails, show error message
+      handleSnackbarOpen("Wrong OTP. Please enter the correct OTP.");
     }
   };
 
@@ -400,6 +402,7 @@ const Registration = () => {
                         endAdornment={
                           <InputAdornment position="end">
                             <Typography
+                              // onClick={handleOpenPhoneDialog}
                               onClick={
                                 PhoneNoDialogtext ? null : handleOpenPhoneDialog
                               }
@@ -610,6 +613,15 @@ const Registration = () => {
           </div>
         </div>
       </Container>
+      <Snackbar
+      open={openSnackbar}
+      autoHideDuration={6000}
+      onClose={handleSnackbarClose}
+    >
+      <Alert onClose={handleSnackbarClose} severity="error" sx={{ width: '100%' }}>
+        {snackbarMessage}
+      </Alert>
+    </Snackbar>
     </div>
   );
 };
