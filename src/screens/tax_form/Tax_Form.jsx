@@ -48,10 +48,9 @@ const Tax_Form = ({ taxFormDetails, setTaxFormDetails }) => {
       ...prevDetails,
       ...storedData,
     }));
-    console.log(storedData)
     checkRefreshData();
   }, []);
-  console.log(taxFormDetails)
+
   return (
     <Container
       sx={{

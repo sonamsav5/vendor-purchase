@@ -19,6 +19,7 @@ import { checkRefreshData } from "../../action/splash/splase_action";
 import { useEffect } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { accountState, profileState, taxState } from "./initialState";
 
 const Details = () => {
   const [activeStep, setActiveStep] = useState(0);
@@ -58,7 +59,7 @@ const Details = () => {
     if (activeStep === 0) handleEditProfile();
     if (activeStep === 1) handleEditTax();
     if (activeStep === 2) handleEditAccount();
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+ 
   };
 
   const validateProfile = (validationFunction) => {
@@ -92,6 +93,10 @@ const Details = () => {
   };
 
   const handleEditProfile = () => {
+    if(findEmptyKeys(profileDetails,profileState).length){
+      alert('All fields requred')
+      return
+    }
     const user = localStorage.getItem("user")
       ? JSON.parse(localStorage.getItem("user"))
       : {};
@@ -100,8 +105,13 @@ const Details = () => {
       ...profileDetails,
     };
     localStorage.setItem("user", JSON.stringify(temp));
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
   const handleEditAccount = () => {
+    if(findEmptyKeys(accountDetails,accountState).length){
+      alert('All fields requred')
+      return
+    }
     const user = localStorage.getItem("user")
       ? JSON.parse(localStorage.getItem("user"))
       : {};
@@ -111,9 +121,14 @@ const Details = () => {
       AccountTypeId: accountDetails.AccountTypeId,
     };
     localStorage.setItem("user", JSON.stringify(temp));
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
   const handleEditTax = () => {
+    if(findEmptyKeys(taxFormDetails,taxState).length){
+      alert('All fields requred')
+      return
+    }
     const user = localStorage.getItem("user")
       ? JSON.parse(localStorage.getItem("user"))
       : {};
@@ -122,7 +137,21 @@ const Details = () => {
       ...taxFormDetails,
     };
     localStorage.setItem("user", JSON.stringify(temp));
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
+
+  function findEmptyKeys(completeData , obj) {
+    const emptyKeys = [];
+    for (const key in obj) {
+      if (completeData.hasOwnProperty(key)) {
+        const value = completeData[key];
+        if (value === null || value === undefined || value === '') {
+          emptyKeys.push(key);
+        }
+      }
+    }
+    return emptyKeys;
+  }
 
   function CustomTabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -278,7 +307,6 @@ const Details = () => {
                 maxWidth: "1200px",
                 width: "1200px",
                 margin: "auto",
-
                 bottom: 0,
                 left: 0,
                 paddingX: "1rem",
@@ -301,61 +329,43 @@ const Details = () => {
                 ""
               )}
               {activeStep < 3 ? (
-                <Grid
-                  container
-                  direction="row"
-                  justifyContent="flex-end"
-                  alignItems="center"
-                >
-                  <Grid>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={handleNext}
-                      sx={{
-                        backgroundColor: "#020043",
-                        color: "#FFD500",
-                        padding: "5px 10px",
-                        marginLeft: "1rem",
-                        cursor: "pointer",
-                        "&:focus": {
-                          color: "#FFD500",
-                          backgroundColor: "#020043",
-                        },
-                        "&:hover": {
-                          color: "#FFD500",
-                          backgroundColor: "#020043",
-                        },
-                      }}
-                    >
-                      Next
-                    </Button>
-                  </Grid>
-                </Grid>
+                   <Button
+                   variant="contained"
+                   color="primary"
+                   onClick={handleNext}
+                   sx={{
+                     backgroundColor: "#020043",
+                     color: "#FFD500",
+                     padding: "5px 10px",
+                     marginLeft: "1rem",
+                     cursor: "pointer",
+                     "&:focus": {
+                       color: "#FFD500",
+                       backgroundColor: "#020043",
+                     },
+                     "&:hover": {
+                       color: "#FFD500",
+                       backgroundColor: "#020043",
+                     },
+                   }}
+                 >
+                   Next
+                 </Button>
               ) : (
                 ""
               )}
               {activeStep === 3 ? (
-                <Grid
-                  container
-                  direction="row"
-                  justifyContent="flex-end"
-                  alignItems="center"
-                >
-                  <Grid>
                     <Button
-                      onClick={handleSubmit}
-                      color="success"
-                      variant="contained"
-                      sx={{
-                        marginLeft: "1rem",
-                      }}
-                    >
-                      {" "}
-                      submit
-                    </Button>
-                  </Grid>
-                </Grid>
+                    onClick={handleSubmit}
+                    color="success"
+                    variant="contained"
+                    sx={{
+                      marginLeft: "1rem",
+                    }}
+                  >
+                    {" "}
+                    submit
+                  </Button>
               ) : (
                 ""
               )}
