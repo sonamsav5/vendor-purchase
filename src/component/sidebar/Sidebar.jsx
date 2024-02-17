@@ -81,6 +81,18 @@ const Sidebar = ({ navbar, setNavbar, drawerWidth }) => {
   const drawer = (
     <div>
       <Box sx={{ position: "relative" }}>
+        <Box
+          sx={{
+            display: { xs: "block", md: "none" },
+            position: "absolute",
+            top: "1rem",
+            right: "1rem",
+            cursor: "pointer",
+          }}
+          onClick={() => setNavbar(false)}
+        >
+          <CloseIcon sx={{ color: "red", fontSize: 30 }} />
+        </Box>
         <Avatar
           alt="Profile Photo"
           sx={{
@@ -438,7 +450,7 @@ const Sidebar = ({ navbar, setNavbar, drawerWidth }) => {
         component="nav"
         sx={{
           width: { sm: drawerWidth },
-          display: navbar ? "block" : "none",
+          display: { md: "block", xs: navbar ? "block" : "none" },
           flexShrink: { sm: 0 },
         }}
         aria-label="mailbox folders"
@@ -468,7 +480,7 @@ const Sidebar = ({ navbar, setNavbar, drawerWidth }) => {
         <Drawer
           variant="permanent"
           sx={{
-            display: navbar ? "block" : "none",
+            display: { md: "block", xs: navbar ? "block" : "none" },
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
               width: drawerWidth,

@@ -21,7 +21,7 @@ const DashBoard_Layout = ({ children, role }) => {
       />
       <Stack
         flex={1}
-        ml={navbar && { md:`${drawerWidth}px`, xs: 0 }}
+        ml={{ md:`${drawerWidth}px`, xs: 0 }}
         overflow="hidden"
       >
         <Box maxWidth="100%" width="100%" marginTop='3rem'>
